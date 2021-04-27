@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- ServiceFacade -->
+	<bean id="productionServiceFacadeImpl"
+		class="com.project.aesup.logistics.production.serviceFacade.ProductionServiceFacadeImpl">
+		<property name="mpsAS" ref="mpsApplicationServiceImpl" />
+		<property name="mrpAS" ref="mrpApplicationServiceImpl" />
+		<property name="workOrderAS" ref="workOrderApplicationServiceImpl" />
+	</bean>
+
+	<!-- applicationService -->
+	<bean id="mpsApplicationServiceImpl"
+		class="com.project.aesup.logistics.production.applicationService.MpsApplicationServiceImpl">
+		<property name="mpsDAO" ref="mpsDAOImpl" />
+		<property name="contractDetailDAO" ref="contractDetailDAOImpl" />
+		<property name="salesPlanDAO" ref="salesPlanDAOImpl" />
+	</bean>
+
+	<bean id="mrpApplicationServiceImpl"
+		class="com.project.aesup.logistics.production.applicationService.MrpApplicationServiceImpl">
+		<property name="mpsDAO" ref="mpsDAOImpl" />
+		<property name="mrpDAO" ref="mrpDAOImpl" />
+		<property name="mrpGatheringDAO" ref="mrpGatheringDAOImpl" />
+	</bean>
+
+	<bean id="workOrderApplicationServiceImpl"
+		class="com.project.aesup.logistics.production.applicationService.WorkOrderApplicationServiceImpl">
+		<property name="workOrderDAO" ref="workOrderDAOImpl" />
+	</bean>
+
+	<!-- DAOImpl -->
+	<bean id="mpsDAOImpl"
+		class="com.project.aesup.logistics.production.dao.MpsDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+
+	<bean id="mrpDAOImpl"
+		class="com.project.aesup.logistics.production.dao.MrpDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+
+	<bean id="mrpGatheringDAOImpl"
+		class="com.project.aesup.logistics.production.dao.MrpGatheringDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+
+	<bean id="workOrderDAOImpl"
+		class="com.project.aesup.logistics.production.dao.WorkOrderDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+
+
+</beans>

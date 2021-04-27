@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[3.9.10.201909171046-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[true]]></enableImports>
+	<configs>
+	</configs>
+	<autoconfigs>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-purchase.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-hr.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-base.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-hr.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-logisticsInfo.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-production.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-authorityManager.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-servlet.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-main.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-AOP.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-authorityManager.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-production.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-basicInfo.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-base.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-basicInfo.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-logisticsInfo.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-purchase.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/servlet/servlet-sales.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-jdbc.xml</config>
+		<config>src/main/webapp/WEB-INF/spring/context/applicationContext-sales.xml</config>
+	</autoconfigs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="workplace">
+
+	<typeAlias alias="workplaceTO" type="com.project.aesup.basicInfo.to.WorkplaceTO"/>
+	<resultMap id="workplaceResult" class="workplaceTO">
+		<result property="workplaceCeoName" column="WORKPLACE_CEO_NAME"/>
+		<result property="isMainOffice" column="IS_MAIN_OFFICE"/>
+		<result property="workplaceDetailAddress" column="WORKPLACE_DETAIL_ADDRESS"/>
+		<result property="workplaceBusinessConditions" column="WORKPLACE_BUSINESS_CONDITIONS"/>
+		<result property="workplaceBusinessItems" column="WORKPLACE_BUSINESS_ITEMS"/>
+		<result property="workplaceFaxNumber" column="WORKPLACE_FAX_NUMBER"/>
+		<result property="workplaceEstablishDate" column="WORKPLACE_ESTABLISH_DATE"/>
+		<result property="businessLicenseNumber" column="BUSINESS_LICENSE_NUMBER"/>
+		<result property="workplaceTelNumber" column="WORKPLACE_TEL_NUMBER"/>
+		<result property="workplaceName" column="WORKPLACE_NAME"/>
+		<result property="workplaceBasicAddress" column="WORKPLACE_BASIC_ADDRESS"/>
+		<result property="workplaceCloseDate" column="WORKPLACE_CLOSE_DATE"/>
+		<result property="workplaceCode" column="WORKPLACE_CODE"/>
+		<result property="companyCode" column="COMPANY_CODE"/>
+		<result property="workplaceOpenDate" column="WORKPLACE_OPEN_DATE"/>
+		<result property="corporationLicenseNumber" column="CORPORATION_LICENSE_NUMBER"/>
+		<result property="workplaceZipCode" column="WORKPLACE_ZIP_CODE"/>
+	</resultMap>
+	
+	<select id="selectWorkplaceList" resultMap="workplaceResult" parameterClass="string">
+		SELECT * FROM WORKPLACE WHERE COMPANY_CODE = #companyCode#
+	</select>
+	
+	<parameterMap id="workplaceInsertParam" class="workplaceTO">
+		<parameter property="workplaceCode" jdbcType="VARCHAR"/>
+		<parameter property="companyCode" jdbcType="VARCHAR"/>
+		<parameter property="workplaceName" jdbcType="VARCHAR"/>
+		<parameter property="businessLicenseNumber" jdbcType="VARCHAR"/>
+		<parameter property="corporationLicenseNumber" jdbcType="VARCHAR"/>
+		<parameter property="workplaceCeoName" jdbcType="NVARCHAR"/>
+		<parameter property="workplaceBusinessConditions" jdbcType="NVARCHAR"/>
+		<parameter property="workplaceBusinessItems" jdbcType="NVARCHAR"/>
+		<parameter property="workplaceZipCode" jdbcType="VARCHAR"/>
+		<parameter property="workplaceBasicAddress" jdbcType="NVARCHAR"/>
+		<parameter property="workplaceDetailAddress" jdbcType="NVARCHAR"/>
+		<parameter property="workplaceTelNumber" jdbcType="VARCHAR"/>
+		<parameter property="workplaceFaxNumber" jdbcType="VARCHAR"/>
+		<parameter property="workplaceEstablishDate" jdbcType="VARCHAR"/>
+		<parameter property="workplaceOpenDate" jdbcType="VARCHAR"/>
+		<parameter property="workplaceCloseDate" jdbcType="VARCHAR"/>
+		<parameter property="isMainOffice" jdbcType="CHAR"/>
+	</parameterMap>
+	
+	<insert id="insertWorkplace" parameterMap="workplaceInsertParam">
+		Insert into WORKPLACE ( WORKPLACE_CODE , COMPANY_CODE , WORKPLACE_NAME ,
+		BUSINESS_LICENSE_NUMBER , CORPORATION_LICENSE_NUMBER , WORKPLACE_CEO_NAME ,
+		WORKPLACE_BUSINESS_CONDITIONS , WORKPLACE_BUSINESS_ITEMS , WORKPLACE_ZIP_CODE, 
+		WORKPLACE_BASIC_ADDRESS , WORKPLACE_DETAIL_ADDRESS , WORKPLACE_TEL_NUMBER ,
+		WORKPLACE_FAX_NUMBER , WORKPLACE_ESTABLISH_DATE , WORKPLACE_OPEN_DATE ,
+		WORKPLACE_CLOSE_DATE , IS_MAIN_OFFICE) 
+		values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+	</insert>
+	
+	<parameterMap id="workplaceUpdateParam" class="workplaceTO">
+		<parameter property="companyCode" jdbcType="VARCHAR" />
+		<parameter property="workplaceName" jdbcType="NVARCHAR" />
+		<parameter property="businessLicenseNumber" jdbcType="VARCHAR" />
+		<parameter property="corporationLicenseNumber" jdbcType="VARCHAR" />
+		<parameter property="workplaceCeoName" jdbcType="NVARCHAR" />
+		<parameter property="workplaceBusinessConditions" jdbcType="NVARCHAR" />
+		<parameter property="workplaceBusinessItems" jdbcType="NVARCHAR" />
+		<parameter property="workplaceZipCode" jdbcType="VARCHAR" />
+		<parameter property="workplaceBasicAddress" jdbcType="NVARCHAR" />
+		<parameter property="workplaceDetailAddress" jdbcType="NVARCHAR" />
+		<parameter property="workplaceTelNumber" jdbcType="VARCHAR" />
+		<parameter property="workplaceFaxNumber" jdbcType="VARCHAR" />
+		<parameter property="workplaceEstablishDate" jdbcType="VARCHAR" />
+		<parameter property="workplaceOpenDate" jdbcType="VARCHAR" />
+		<parameter property="workplaceCloseDate" jdbcType="VARCHAR" />
+		<parameter property="isMainOffice" jdbcType="CHAR" />
+		<parameter property="workplaceCode" jdbcType="VARCHAR" />
+	</parameterMap>
+	
+	<update id="updateWorkplace" parameterMap="workplaceUpdateParam">
+		UPDATE WORKPLACE SET
+			COMPANY_CODE = ? , 
+			WORKPLACE_NAME = ? , 
+			BUSINESS_LICENSE_NUMBER = ? ,
+			CORPORATION_LICENSE_NUMBER = ? , 
+			WORKPLACE_CEO_NAME = ? , 
+			WORKPLACE_BUSINESS_CONDITIONS = ? ,
+			WORKPLACE_BUSINESS_ITEMS = ? , 
+			WORKPLACE_ZIP_CODE = ? , 
+			WORKPLACE_BASIC_ADDRESS = ? ,
+			WORKPLACE_DETAIL_ADDRESS = ? , 
+			WORKPLACE_TEL_NUMBER = ? , 
+			WORKPLACE_FAX_NUMBER = ? ,
+			WORKPLACE_ESTABLISH_DATE = ? , 
+			WORKPLACE_OPEN_DATE = ? , 
+			WORKPLACE_CLOSE_DATE = ? , 
+			IS_MAIN_OFFICE = ?
+		WHERE WORKPLACE_CODE = ?
+	</update>
+	
+	<delete id="deleteWorkplace" parameterClass="workplaceTO">
+		DELETE FROM WORKPLACE WHERE WORKPLACE_CODE = #workplaceCode#
+	</delete>
+	
+</sqlMap>

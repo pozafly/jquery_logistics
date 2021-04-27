@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+    
+<sqlMap namespace="code">
+	
+	<typeAlias alias="codeTO" type="com.project.aesup.base.to.CodeTO"/>
+	<resultMap id="codeList" class="codeTO" groupBy="divisionCodeNo">
+		<result property="divisionCodeNo" column="DIVISION_CODE_NO"/>
+		<result property="codeType" column="CODE_TYPE"/>
+		<result property="divisionCodeName" column="DIVISION_CODE_NAME"/>
+		<result property="codeChangeAvailable" column="CODE_CHANGE_AVAILABLE"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="codeDetailTOList" resultMap="codeDetail.codeDetailResult" javaType="java.util.ArrayList" />
+	</resultMap>
+	
+	<select id="selectCodeList" resultMap="codeList">
+	    SELECT *
+		FROM CODE C1, CODE_DETAIL C2
+		WHERE C1.DIVISION_CODE_NO = C2.DIVISION_CODE_NO (+)
+		ORDER BY C1.DIVISION_CODE_NO
+	</select>
+	
+	<insert id="insertCode" parameterClass="codeTO">
+		Insert into CODE ( DIVISION_CODE_NO , CODE_TYPE , DIVISION_CODE_NAME , CODE_CHANGE_AVAILABLE , DESCRIPTION ) 
+		values ( #divisionCodeNo# , #codeType# , #divisionCodeName# , #codeChangeAvailable# , #description# )
+	</insert>
+	
+	<update id="updateCode" parameterClass="codeTO">
+		UPDATE CODE SET CODE_TYPE = #codeType# , DIVISION_CODE_NAME = #divisionCodeName# ,
+		CODE_CHANGE_AVAILABLE = #codeChangeAvailable# , DESCRIPTION = #description# 
+		WHERE DIVISION_CODE_NO = #divisionCodeNo#
+	</update>
+	
+	<delete id="deleteCode" parameterClass="codeTO">
+		DELETE FROM CODE WHERE DIVISION_CODE_NO = #divisionCodeNo#
+	</delete>
+	
+</sqlMap>

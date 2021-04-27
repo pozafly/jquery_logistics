@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- ServiceFacade -->
+	<bean id="salesServiceFacadeImpl" class="com.project.aesup.logistics.sales.serviceFacade.SalesServiceFacadeImpl">
+		<property name="estimateAS" ref="estimateApplicationServiceImpl" />
+		<property name="contractAS" ref="contractApplicationServiceImpl" />
+		<property name="salesPlanAS" ref="salesPlanApplicationServiceImpl" />
+		<property name="deliveryAS" ref="deliveryApplicationServiceImpl" />
+	</bean>
+
+	<!-- applicationService -->
+	<bean id="contractApplicationServiceImpl" class="com.project.aesup.logistics.sales.applicationService.ContractApplicationServiceImpl">
+		<property name="contractDAO" ref="contractDAOImpl" />
+		<property name="contractDetailDAO" ref="contractDetailDAOImpl" />
+		<property name="estimateDAO" ref="estimateDAOImpl" />
+		<property name="estimateDetailDAO" ref="estimateDetailDAOImpl" />
+	</bean>
+	
+	<bean id="deliveryApplicationServiceImpl" class="com.project.aesup.logistics.sales.applicationService.DeliveryApplicationServiceImpl">
+		<property name="deliveryDAO" ref="deliveryDAOImpl" />
+	</bean>
+	
+	<bean id="estimateApplicationServiceImpl" class="com.project.aesup.logistics.sales.applicationService.EstimateApplicationServiceImpl">
+		<property name="estimateDAO" ref="estimateDAOImpl" />
+		<property name="estimateDetailDAO" ref="estimateDetailDAOImpl" />
+	</bean>
+	
+	<bean id="salesPlanApplicationServiceImpl" class="com.project.aesup.logistics.sales.applicationService.SalesPlanApplicationServiceImpl">
+		<property name="salesPlanDAO" ref="salesPlanDAOImpl" />
+	</bean>
+
+	<!-- DAOImpl -->
+	<bean id="contractDAOImpl" class="com.project.aesup.logistics.sales.dao.ContractDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="contractDetailDAOImpl" class="com.project.aesup.logistics.sales.dao.ContractDetailDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="deliveryDAOImpl" class="com.project.aesup.logistics.sales.dao.DeliveryDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="estimateDAOImpl" class="com.project.aesup.logistics.sales.dao.EstimateDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="estimateDetailDAOImpl" class="com.project.aesup.logistics.sales.dao.EstimateDetailDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="salesPlanDAOImpl" class="com.project.aesup.logistics.sales.dao.SalesPlanDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+
+</beans>

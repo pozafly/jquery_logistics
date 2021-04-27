@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- ServiceFacade -->
+	<bean id="organizationServiceFacadeImpl" class="com.project.aesup.basicInfo.serviceFacade.OrganizationServiceFacadeImpl">
+		<property name="companyAS" ref="companyApplicationServiceImpl" />
+		<property name="workplaceAS" ref="workplaceApplicationServiceImpl" />
+		<property name="deptAS" ref="departmentApplicationServiceImpl" />
+	</bean>
+	
+	<bean id="cooperatorServiceFacadeImpl" class="com.project.aesup.basicInfo.serviceFacade.CooperatorServiceFacadeImpl">
+		<property name="customerAS" ref="customerApplicationServiceImpl" />
+		<property name="associatsAS" ref="financialAccountAssociatesApplicationServiceImpl" />
+	</bean>
+	
+	<!-- applicationService -->
+	<bean id="companyApplicationServiceImpl" class="com.project.aesup.basicInfo.applicationService.CompanyApplicationServiceImpl">
+		<property name="companyDAO" ref="companyDAOImpl" />
+		<property name="codeDetailDAO" ref="codeDetailDAOImpl" />
+	</bean>
+	
+	<bean id="workplaceApplicationServiceImpl" class="com.project.aesup.basicInfo.applicationService.WorkplaceApplicationServiceImpl">
+		<property name="workplaceDAO" ref="workplaceDAOImpl" />
+		<property name="codeDetailDAO" ref="codeDetailDAOImpl" />
+	</bean>
+	
+	<bean id="departmentApplicationServiceImpl" class="com.project.aesup.basicInfo.applicationService.DepartmentApplicationServiceImpl">
+		<property name="deptDAO" ref="departmentDAOImpl" />
+		<property name="codeDetailDAO" ref="codeDetailDAOImpl" />
+	</bean>
+	
+	<bean id="customerApplicationServiceImpl" class="com.project.aesup.basicInfo.applicationService.CustomerApplicationServiceImpl">
+		<property name="customerDAO" ref="customerDAOImpl"/>
+		<property name="codeDetailDAO" ref="codeDetailDAOImpl"/>
+	</bean>
+	
+	<bean id="financialAccountAssociatesApplicationServiceImpl" class="com.project.aesup.basicInfo.applicationService.FinancialAccountAssociatesApplicationServiceImpl">
+		<property name="associatesDAO" ref="financialAccountAssociatesDAOImpl" />
+		<property name="codeDetailDAO" ref="codeDetailDAOImpl" />
+	</bean>
+	
+	
+	<!-- DAOImpl -->
+	<bean id="companyDAOImpl" class="com.project.aesup.basicInfo.dao.CompanyDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="codeDetailDAOImpl" class="com.project.aesup.base.dao.CodeDetailDAOImpl" 
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="workplaceDAOImpl" class="com.project.aesup.basicInfo.dao.WorkplaceDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="departmentDAOImpl" class="com.project.aesup.basicInfo.dao.DepartmentDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="customerDAOImpl" class="com.project.aesup.basicInfo.dao.CustomerDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="financialAccountAssociatesDAOImpl" class="com.project.aesup.basicInfo.dao.FinancialAccountAssociatesDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+</beans>

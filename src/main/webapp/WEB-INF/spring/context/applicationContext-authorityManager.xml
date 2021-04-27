@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- ServiceFacade -->
+	<bean id="authorityManagerServiceFacadeImpl"
+		class="com.project.aesup.authorityManager.serviceFacade.AuthorityManagerServiceFacadeImpl">
+		<property name="logInAS" ref="loginApplicationServiceImpl"/>
+		<property name="userMenuAS" ref="userMenuApplicationServiceImpl"/>
+	</bean>
+ 
+	<!-- applicationService -->
+	<bean id="loginApplicationServiceImpl" class="com.project.aesup.authorityManager.applicationService.LogInApplicationServiceImpl">
+		<property name="empSearchDAO" ref="empSearchingDAOImpl" />
+		<property name="empSecretDAO" ref="empSecretDAOImpl" />
+	</bean>
+ 
+	<bean id="userMenuApplicationServiceImpl" class="com.project.aesup.authorityManager.applicationService.UserMenuApplicationServiceImpl">
+		<property name="userMenuDAO" ref="userMenuDAOImpl"/>
+	</bean>
+ 
+	<!-- DAOImpl -->
+	<bean id="userMenuDAOImpl"
+		class="com.project.aesup.authorityManager.dao.UserMenuDAOImpl" parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="empSearchingDAOImpl"
+		class="com.project.aesup.hr.dao.EmpSearchingDAOImpl" parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="employeeSecretDAOImpl"
+    	class="com.project.aesup.hr.dao.EmployeeSecretDAOImpl" parent="iBatisSupportDao">
+	</bean>
+	
+</beans>

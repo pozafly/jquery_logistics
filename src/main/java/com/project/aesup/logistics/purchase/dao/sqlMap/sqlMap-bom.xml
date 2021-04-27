@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="bom">
+ 
+	<typeAlias alias="bomDeployTO" type="com.project.aesup.logistics.purchase.to.BomDeployTO"/>
+	
+	<resultMap id="bomDeployResult" class="bomDeployTO">
+		<result property="bomNo" column="BOM_NO" />
+		<result property="bomLevel" column="BOM_LEVEL" />
+		<result property="parentItemCode" column="PARENT_ITEM_CODE" />
+		<result property="itemCode" column="ITEM_CODE" />
+		<result property="itemName" column="ITEM_NAME" />
+		<result property="unitOfStock" column="UNIT_OF_STOCK" />
+		<result property="netAmount" column="NET_AMOUNT" />
+		<result property="lossRate" column="LOSS_RATE" />
+		<result property="necessaryAmount" column="NECESSARY_AMOUNT" />
+		<result property="leadTime" column="LEAD_TIME" />
+		<result property="isLeaf" column="IS_LEAF" />
+		<result property="description" column="DESCRIPTION" />
+	</resultMap>
+	
+	<select id="selectBomDeployList" parameterClass="map" resultMap="bomDeployResult">
+		SELECT T1.BOM_NO, T1.BOM_LEVEL, T1.PARENT_ITEM_CODE, T1.ITEM_CODE, T2.ITEM_NAME, T2.UNIT_OF_STOCK, 
+			T1.NET_AMOUNT, TO_NUMBER(NVL(LOSS_RATE,0)) AS LOSS_RATE,
+			TO_CHAR(T1.NET_AMOUNT*(1 + TO_NUMBER(NVL(LOSS_RATE,0)) )) AS NECESSARY_AMOUNT, T2.LEAD_TIME, T1.IS_LEAF, T1.DESCRIPTION
+		FROM 
+		( SELECT CONNECT_BY_ROOT ITEM_CODE || ' -' || TO_CHAR(ROWNUM, '00') AS BOM_NO, ( LEVEL-1 ) AS BOM_LEVEL, 
+				PARENT_ITEM_CODE, LPAD(' ' , 8 * (LEVEL-1) ) || ITEM_CODE AS ITEM_CODE, 
+				( CASE CONNECT_BY_ISLEAF WHEN 0 THEN 'false' WHEN 1 THEN 'true' END ) AS IS_LEAF, NET_AMOUNT, DESCRIPTION
+			FROM BOM
+			START WITH ITEM_CODE = #itemCode# 
+			
+		<dynamic prepend="AND ">
+		
+			<isEqual property="deployCondition" compareValue="forward">
+			
+				<isEqual property="itemClassification" compareValue="IT-CI">
+				PARENT_ITEM_CODE = 'NULL' CONNECT BY PARENT_ITEM_CODE = PRIOR ITEM_CODE
+				</isEqual>
+				
+				
+				<isEqual property="itemClassification" compareValue="IT-SI">
+						
+					<isEqual property="itemCode" compareValue="DK-AP01">
+					PARENT_ITEM_CODE = 'DK-01' CONNECT BY PARENT_ITEM_CODE = PRIOR ITEM_CODE
+					</isEqual>
+					
+					<isEqual property="itemCode" compareValue="DK-AP02">
+					PARENT_ITEM_CODE = 'DK-02' CONNECT BY PARENT_ITEM_CODE = PRIOR ITEM_CODE
+					</isEqual>
+				
+				</isEqual>
+				
+			</isEqual>
+		
+			<isEqual property="deployCondition" compareValue="reverse">
+				PARENT_ITEM_CODE != 'NULL' 
+				CONNECT BY PRIOR PARENT_ITEM_CODE = ITEM_CODE
+			</isEqual>
+			
+		</dynamic>
+			
+			ORDER SIBLINGS BY NO ) T1,
+			( SELECT ITEM_CODE, ITEM_NAME, ITEM_CLASSIFICATION, UNIT_OF_STOCK, LOSS_RATE, LEAD_TIME FROM ITEM ) T2
+		WHERE TRIM(T1.ITEM_CODE) = T2.ITEM_CODE
+		ORDER BY BOM_NO
+	
+	</select>
+	
+	
+	<typeAlias alias="bomInfoTO" type="com.project.aesup.logistics.purchase.to.BomInfoTO"/>
+	
+	<resultMap id="bomInfoResult" class="bomInfoTO">
+		<result property="parentItemCode" column="PARENT_ITEM_CODE" />
+		<result property="itemCode" column="ITEM_CODE" />
+		<result property="no" column="NO" />
+		<result property="itemName" column="ITEM_NAME" />
+		<result property="itemClassification" column="ITEM_CLASSIFICATION" />
+		<result property="itemClassificationName" column="ITEM_CLASSIFICATION_NAME" />
+		<result property="netAmount" column="NET_AMOUNT" />
+		<result property="description" column="DESCRIPTION" />
+	</resultMap>
+	
+	<select id="selectBomInfoList" parameterClass="string" resultMap="bomInfoResult">
+		SELECT B.PARENT_ITEM_CODE, B.ITEM_CODE, B.NO, I.ITEM_NAME, I.ITEM_CLASSIFICATION,
+		    C.DETAIL_CODE_NAME AS ITEM_CLASSIFICATION_NAME, B.NET_AMOUNT, B.DESCRIPTION
+		FROM
+		( SELECT * FROM BOM 
+		    WHERE ( ITEM_CODE = #itemCode# AND PARENT_ITEM_CODE = 'NULL' ) 
+		        OR PARENT_ITEM_CODE = #itemCode# ) B, 
+		ITEM I, CODE_DETAIL C
+		WHERE B.ITEM_CODE = I.ITEM_CODE
+		    AND I.ITEM_CLASSIFICATION = C.DETAIL_CODE
+		ORDER BY NO
+	</select>
+	
+	<resultMap id="bomRegisterAvailableResult" class="bomInfoTO">
+		<result property="itemClassificationName" column="ITEM_CLASSIFICATION_NAME" />
+		<result property="itemCode" column="ITEM_CODE" />
+		<result property="itemName" column="ITEM_NAME" />
+	</resultMap>
+	
+	<select id="selectAllItemWithBomRegisterAvailable" resultMap="bomRegisterAvailableResult">
+		WITH ALL_REGISTERED_BOM AS
+			( SELECT ITEM_CODE 
+				FROM ( SELECT * FROM BOM WHERE PARENT_ITEM_CODE = 'NULL' )
+				GROUP BY ITEM_CODE ) ,
+	
+		ALL_ITEM_AS_PRODUCT AS
+			( SELECT ITEM_CLASSIFICATION, ITEM_CODE, ITEM_NAME 
+				FROM ITEM 
+				WHERE ITEM_CLASSIFICATION IN ( 'IT-CI', 'IT-SI' ) )
+	
+		SELECT T2.DETAIL_CODE_NAME AS ITEM_CLASSIFICATION_NAME, 
+			T1.ITEM_CODE, T1.ITEM_NAME 
+		FROM ALL_ITEM_AS_PRODUCT T1, CODE_DETAIL T2
+		WHERE T1.ITEM_CLASSIFICATION = T2.DETAIL_CODE 
+			AND T1.ITEM_CODE NOT IN ( SELECT ITEM_CODE FROM ALL_REGISTERED_BOM )
+	</select>
+	
+	<typeAlias alias="bomTO" type="com.project.aesup.logistics.purchase.to.BomTO"/>
+	
+	<insert id="insertBom" parameterClass="bomTO">
+		Insert into BOM ( ITEM_CODE, PARENT_ITEM_CODE, NO, NET_AMOUNT, DESCRIPTION )
+		values ( #itemCode:VARCHAR# , #parentItemCode:VARCHAR# , #no:INTEGER# , #netAmount:INTEGER# , #description:NVARCHAR# )
+	</insert>
+	
+	<update id="updateBom" parameterClass="bomTO">
+		UPDATE BOM SET 
+			NO = #no:INTEGER# , 
+			NET_AMOUNT = #netAmount:INTEGER# , 
+			DESCRIPTION = #description:NVARCHAR# 
+		WHERE PARENT_ITEM_CODE = #parentItemCode:VARCHAR# 
+			AND ITEM_CODE = #itemCode:VARCHAR#
+	</update>
+	
+	<delete id="deleteBom"  parameterClass="bomTO">
+		DELETE FROM BOM 
+		WHERE PARENT_ITEM_CODE = #parentItemCode:VARCHAR# 
+			AND ITEM_CODE = #itemCode:VARCHAR#
+	</delete>
+	 
+	 
+ </sqlMap>

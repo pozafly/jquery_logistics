@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+		<bean id="salesUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="order" value="1" />
+		<property name="alwaysUseFullPath" value="false" />
+		<property name="mappings">
+			<props>
+             <prop key="/searchEstimate.do">estimateController</prop>
+             <prop key="/addNewEstimate.do">estimateController</prop>
+             <prop key="/batchEstimateDetailListProcess.do">estimateController</prop>
+             
+             <prop key="/searchEstimateInContractAvailable.do">contractController</prop>
+             <prop key="/addNewContract.do">contractController</prop>
+             <prop key="/cancleEstimate.do">contractController</prop>
+             <prop key="/searchContract.do">contractController</prop>
+             <prop key="/searchContractDetail.do">contractController</prop>
+             
+             <prop key="/searchSalesPlan.do">salesPlanController</prop>
+             <prop key="/batchSalesPlanListProcess.do">salesPlanController</prop>
+                       
+             <prop key="/searchDeliveryList.do">deliveryController</prop>
+             <prop key="/batchDeliveryPlanListProcess.do">deliveryController</prop>
+             <prop key="/searchDeliverableContractList.do">deliveryController</prop>
+             <prop key="/deliver.do">deliveryController</prop>
+             <prop key="/searchDeliveryInfoList.do">deliveryController</prop>
+                      
+             <prop key="/estimateInfo.html">urlFilenameViewController</prop>
+             <prop key="/estimateRegister.html">urlFilenameViewController</prop>
+             <prop key="/contractInfo.html">urlFilenameViewController</prop>
+             <prop key="/contractRegister.html">urlFilenameViewController</prop>
+             <prop key="/deliveryInfo.html">urlFilenameViewController</prop>
+             <prop key="/salesPlanInfo.html">urlFilenameViewController</prop>
+
+			</props>
+		</property>
+	</bean>
+
+
+	<bean id="ViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/sales/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	
+	<!-- controller -->
+	<bean id="estimateController" class="com.project.aesup.logistics.sales.controller.EstimateController"
+		p:cacheSeconds="0">
+		<property name="salesSF" ref="salesServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+	
+	<bean id="contractController" class="com.project.aesup.logistics.sales.controller.ContractController"
+		p:cacheSeconds="0">
+		<property name="salesSF" ref="salesServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+	
+	<bean id="salesPlanController" class="com.project.aesup.logistics.sales.controller.SalesPlanController"
+		p:cacheSeconds="0">
+		<property name="salesSF" ref="salesServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+	
+	<bean id="deliveryController" class="com.project.aesup.logistics.sales.controller.DeliveryController"
+		p:cacheSeconds="0">
+		<property name="salesSF" ref="salesServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+</beans>

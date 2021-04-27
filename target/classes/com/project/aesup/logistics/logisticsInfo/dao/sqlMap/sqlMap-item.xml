@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="item">
+    
+	<typeAlias alias="itemInfoTO" type="com.project.aesup.logistics.logisticsInfo.to.ItemInfoTO"/>
+	<resultMap id="itemInfoResult" class="itemInfoTO">
+		<result property="itemCode" column="ITEM_CODE" />
+		<result property="itemName" column="ITEM_NAME" />
+		<result property="itemGroupCode" column="ITEM_GROUP_CODE" />
+		<result property="itemClassification" column="ITEM_CLASSIFICATION" />
+		<result property="unitOfStock" column="UNIT_OF_STOCK" />
+		<result property="lossRate" column="LOSS_RATE" />
+		<result property="leadTime" column="LEAD_TIME" />
+		<result property="standardUnitPrice" column="STANDARD_UNIT_PRICE" />
+		<result property="codeUseCheck" column="CODE_USE_CHECK" />
+		<result property="description" column="DESCRIPTION" />
+	</resultMap>
+	
+	<select id="selectItemList" parameterClass="map" resultMap="itemInfoResult">
+		WITH ITEM_WITH_CODE_USE_CHECK AS
+						(SELECT I.ITEM_CODE, I.ITEM_NAME, I.ITEM_GROUP_CODE, I.ITEM_CLASSIFICATION, 
+					   I.UNIT_OF_STOCK, I.LOSS_RATE, I.LEAD_TIME, I.STANDARD_UNIT_PRICE, I.DESCRIPTION,
+					    C.CODE_USE_CHECK FROM ITEM I, CODE_DETAIL C
+					WHERE I.ITEM_CODE = C.DETAIL_CODE (+) )
+					
+					SELECT * FROM ITEM_WITH_CODE_USE_CHECK
+	
+		<dynamic prepend="WHERE ">
+		
+			<isEqual property="searchCondition" compareValue="ITEM_CLASSIFICATION">
+				ITEM_CLASSIFICATION = #itemClassification#
+			</isEqual>
+	
+			<isEqual property="searchCondition" compareValue="ITEM_GROUP_CODE">
+				ITEM_GROUP_CODE = #itemGroupCode#
+			</isEqual>
+	
+			<isEqual property="searchCondition" compareValue="STANDARD_UNIT_PRICE">
+				STANDARD_UNIT_PRICE BETWEEN 
+					TO_NUMBER( #minPrice# ) AND TO_NUMBER ( #maxPrice# )
+			</isEqual>
+	
+		</dynamic>
+	</select>
+	
+	
+	<typeAlias alias="itemTO" type="com.project.aesup.logistics.logisticsInfo.to.ItemTO"/>
+	<insert id="insertItem" parameterClass="itemTO">
+		Insert into ITEM
+			( ITEM_CODE , ITEM_NAME , ITEM_GROUP_CODE , ITEM_CLASSIFICATION , UNIT_OF_STOCK ,
+			LOSS_RATE , LEAD_TIME , STANDARD_UNIT_PRICE , DESCRIPTION ) 
+			values ( #itemCode# , #itemName# , #itemGroupCode# , #itemClassification# , 
+			#unitOfStock# , #lossRate# , #leadTime# , #standardUnitPrice# , #description# )
+	</insert>
+	
+	<update id="updateItem" parameterClass="itemTO">
+		UPDATE ITEM SET 
+			ITEM_NAME = #itemName# , 
+			ITEM_GROUP_CODE = #itemGroupCode# , 
+			ITEM_CLASSIFICATION = #itemClassification# , 
+			UNIT_OF_STOCK = #unitOfStock# , 
+			LOSS_RATE = #lossRate# , 
+			LEAD_TIME = #leadTime# , 
+			STANDARD_UNIT_PRICE = #standardUnitPrice# , 
+			DESCRIPTION = #description# 
+		WHERE ITEM_CODE = #itemCode#
+	</update>
+	
+	<delete id="deleteItem" parameterClass="itemTO">
+		DELETE FROM ITEM WHERE ITEM_CODE = #itemCode#
+	</delete>
+	
+	<select id="selectItemprice" resultClass="integer" parameterClass="String">
+		SELECT standard_unit_price FROM ITEM WHERE item_code= #itemcode#
+	</select>
+	
+	<select id="selectAllItemList" resultMap="itemInfoResult">
+		SELECT I.ITEM_CODE, I.ITEM_NAME, I.ITEM_GROUP_CODE, I.ITEM_CLASSIFICATION, 
+					 I.UNIT_OF_STOCK, I.LOSS_RATE, I.LEAD_TIME, I.STANDARD_UNIT_PRICE, I.DESCRIPTION, 
+					C.CODE_USE_CHECK FROM ITEM I, CODE_DETAIL C
+					WHERE I.ITEM_CODE = C.DETAIL_CODE (+)
+	</select>
+
+	
+</sqlMap>    

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+    
+<sqlMap namespace="mrp">
+
+	<typeAlias alias="mrpTO" type="com.project.aesup.logistics.production.to.MrpTO"/>
+ 
+	<resultMap id="mrpResult" class="mrpTO">
+		<result property="mrpNo" column="MRP_NO" />
+		<result property="mpsNo" column="MPS_NO" />
+		<result property="mrpGatheringNo" column="MRP_GATHERING_NO" />
+		<result property="itemClassification" column="ITEM_CLASSIFICATION" />
+		<result property="itemCode" column="ITEM_CODE" />
+		<result property="itemName" column="ITEM_NAME" />
+		<result property="unitOfMrp" column="UNIT_OF_MRP" />
+		<result property="requiredAmount" column="REQUIRED_AMOUNT" />
+		<result property="orderDate" column="ORDER_DATE" />
+		<result property="requiredDate" column="REQUIRED_DATE" />
+		<result property="mrpGatheringStatus" column="MRP_GATHERING_STATUS" />
+	</resultMap>
+	
+	<select id="selectMrpList" parameterClass="map" resultMap="mrpResult">
+		SELECT * FROM MRP 
+		
+		<dynamic prepend="WHERE ">
+		
+			<isEqual property="mrpGatheringStatusCondition" compareValue="null" close=" ">
+				MRP_GATHERING_STATUS IS NULL
+			</isEqual>
+	
+			<isEmpty property="mrpGatheringStatusCondition" close=" ">
+				MRP_GATHERING_STATUS IS NULL
+			</isEmpty>
+	
+			<isEqual property="mrpGatheringStatusCondition" compareValue="notNull" close=" ">
+				MRP_GATHERING_STATUS IS NOT NULL
+			</isEqual>
+		
+		</dynamic>
+		
+		ORDER BY MRP_NO
+	</select>
+	
+	<select id="selectMrpListByDate" parameterClass="map" resultMap="mrpResult">
+		SELECT * 
+		FROM MRP 
+		WHERE ( CASE #dateSearchCondtion# WHEN 'orderDate' THEN TO_DATE(ORDER_DATE, 'YYYY-MM-DD') 
+																		WHEN 'requiredDate' THEN TO_DATE(REQUIRED_DATE, 'YYYY-MM-DD') END )						
+			BETWEEN TO_DATE(#startDate# , 'YYYY-MM-DD') AND TO_DATE(#endDate# , 'YYYY-MM-DD')")
+	</select>
+	
+	<select id="selectMrpListAsMrpGatheringNo" parameterClass="string" resultMap="mrpResult">
+		SELECT * FROM MRP 
+		WHERE MRP_GATHERING_NO = #mrpGatheringNo#
+		ORDER BY MRP_NO	
+	</select>
+	
+	<resultMap id="openMrpTO" class="com.project.aesup.logistics.production.to.OpenMrpTO" >
+		<result property="mpsNo" column="MPS_NO"/>
+		<result property="bomNo" column="BOM_NO"/>
+		<result property="itemClassification" column="ITEM_CLASSIFICATION"/>
+		<result property="itemCode" column="ITEM_CODE"/>
+		<result property="itemName" column="ITEM_NAME"/>
+		<result property="unitOfMrp" column="UNIT_OF_MRP"/>
+		<result property="planAmount" column="PLAN_AMOUNT"/>
+		<result property="orderDate" column="ORDER_DATE"/>
+		<result property="requiredDate" column="REQUIRED_DATE"/>
+		<result property="totalLossRate" column="TOTAL_LOSS_RATE"/>
+		<result property="caculatedAmount" column="CACULATED_AMOUNT"/>
+		<result property="requiredAmount" column="REQUIRED_AMOUNT"/>
+	</resultMap>
+	
+	<parameterMap id="openMrpParameter" class="map">
+		<parameter property="mpsNoList" mode="IN" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<parameter property="errorCode" mode="OUT" javaType="java.lang.Integer" jdbcType="DECIMAL"/>
+		<parameter property="errorMsg" mode="OUT" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<parameter property="result" mode="OUT" javaType="java.sql.ResultSet" jdbcType="ORACLECURSOR"/>
+	</parameterMap>
+
+	<procedure id="openMrp" parameterMap="openMrpParameter" resultMap="openMrpTO">
+		{call P_MRP_OPEN(?,?,?,?)}
+	</procedure>
+
+	<resultMap id="mrpNoResult" class="mrpTO">
+		<result property="mrpNo" column="MRP_NO" />
+	</resultMap>
+	
+	<select id="selectMrpCount" parameterClass="string" resultMap="mrpNoResult">
+		SELECT MRP_NO 
+		FROM MRP 
+		WHERE INSTR(MRP_NO, REPLACE( #mrpRegisterDate# , '-' , '' ) ) &gt; 0
+	</select>
+
+	<insert id="insertMrp" parameterClass="mrpTO">
+		Insert into MRP (MRP_NO, MPS_NO, MRP_GATHERING_NO, ITEM_CLASSIFICATION,
+			ITEM_CODE, ITEM_NAME, UNIT_OF_MRP, REQUIRED_AMOUNT, ORDER_DATE,
+			REQUIRED_DATE, MRP_GATHERING_STATUS) 
+		values( #mrpNo:VARCHAR# , #mpsNo:VARCHAR# , #mrpGatheringNo:VARCHAR# , 
+			#itemClassification:VARCHAR# , #itemCode:VARCHAR# , #itemName:NVARCHAR# , 
+			#unitOfMrp:VARCHAR# , #requiredAmount:INTEGER# , #orderDate:VARCHAR# , 
+			#requiredDate:VARCHAR#, #mrpGatheringStatus:CHAR# )
+	</insert>
+	
+	<update id="updateMrp" parameterClass="mrpTO">
+		UPDATE MRP SET 
+			MPS_NO = #mpsNo:VARCHAR# , 
+			MRP_GATHERING_NO = #mrpGatheringNo:VARCHAR# , 
+			ITEM_CLASSIFICATION = #itemClassification:VARCHAR# ,
+			ITEM_CODE = #itemCode:VARCHAR# , 
+			ITEM_NAME = #itemName:NVARCHAR# , 
+			UNIT_OF_MRP = #unitOfMrp:VARCHAR# , 
+			REQUIRED_AMOUNT = #requiredAmount:INTEGER# , 
+			ORDER_DATE = #orderDate:VARCHAR# , 
+			REQUIRED_DATE = #requiredDate:VARCHAR# , 
+			MRP_GATHERING_STATUS = #mrpGatheringStatus:CHAR# 
+		WHERE MRP_NO = #mrpNo#
+	</update>
+	
+	<update id="changeMrpGatheringStatus" parameterClass="map">
+		UPDATE MRP SET 
+			MRP_GATHERING_NO = #mrpGatheringNo:VARCHAR# , 
+			MRP_GATHERING_STATUS = #mrpGatheringStatus:CHAR# 
+		WHERE MRP_NO = #mrpNo#
+	</update>
+	
+	<delete id="deleteMrp" parameterClass="mrpTO">
+		DELETE FROM MRP WHERE MRP_NO = #mrpNo#
+	</delete>
+	
+
+</sqlMap>

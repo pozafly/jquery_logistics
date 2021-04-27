@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- ServiceFacade -->
+	<bean id="baseServiceFacadeImpl"
+		class="com.project.aesup.base.serviceFacade.BaseServiceFacadeImpl">
+		<property name="codeAS" ref="codeApplicationServiceImpl"/>
+		<property name="addressAS" ref="addressApplicationServiceImpl"/>
+		<property name="reportAS"  ref="reportApplicationServiceImpl"/>
+	</bean>
+
+	<!-- applicationService -->
+	<bean id="codeApplicationServiceImpl" 
+		class="com.project.aesup.base.applicationService.CodeApplicationServiceImpl">
+		<property name="codeDAO" ref="codeDAOImpl"/>
+		<property name="codeDetailDAO" ref="codeDetailDAOImpl"/>
+	</bean>
+	
+	<bean id="addressApplicationServiceImpl" 
+		class="com.project.aesup.base.applicationService.AddressApplicationServiceImpl">
+		<property name="addressDAO" ref="addressDAOImpl"/>
+	</bean>
+	
+	<bean id="reportApplicationServiceImpl"
+		class="com.project.aesup.base.applicationService.ReportApplicationServiceImpl">
+		<property name="reportDAO" ref="reportDAOImpl" />
+	</bean>
+	
+	<!-- DAOImpl -->
+	<bean id="codeDAOImpl" class="com.project.aesup.base.dao.CodeDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="codeDetailDAOImpl" class="com.project.aesup.base.dao.CodeDetailDAOImpl" 
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="addressDAOImpl" class="com.project.aesup.base.dao.AddressDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="reportDAOImpl" class="com.project.aesup.base.dao.ReportDAOImpl" 
+		parent="iBatisSupportDao">
+	</bean>
+	
+</beans>

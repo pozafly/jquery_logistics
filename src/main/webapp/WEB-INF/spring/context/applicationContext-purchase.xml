@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- ServiceFacade -->
+	<bean id="purchaseServiceFacadeImpl"
+		  class="com.project.aesup.logistics.purchase.serviceFacade.PurchaseServiceFacadeImpl">
+		<property name="bomAS" ref="bomApplicationServiceImpl"/>
+		<property name="orderAS" ref="orderApplicationServiceImpl"/>
+		<property name="stockAS" ref="stockApplicationServiceImpl"/>
+	</bean>
+
+	<!-- applicationService -->
+	<bean id="bomApplicationServiceImpl" class="com.project.aesup.logistics.purchase.applicationService.BomApplicationServiceImpl">
+		<property name="bomDAO" ref="bomDAOImpl"/>
+	</bean>
+	
+	<bean id="stockApplicationServiceImpl" class="com.project.aesup.logistics.purchase.applicationService.StockApplicationServiceImpl">
+		<property name="stockDAO" ref="stockDAOImpl"/>
+	</bean>
+	
+	<bean id="orderApplicationServiceImpl" class="com.project.aesup.logistics.purchase.applicationService.OrderApplicationServiceImpl">
+		<property name="orderDAO" ref="orderDAOImpl"/>
+	</bean>
+
+	<!-- DAOImpl -->
+	<bean id="bomDAOImpl" class="com.project.aesup.logistics.purchase.dao.BomDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="stockDAOImpl" class="com.project.aesup.logistics.purchase.dao.StockDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="orderDAOImpl" class="com.project.aesup.logistics.purchase.dao.OrderDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+
+
+</beans>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="estimateDetail">
+	
+	<typeAlias alias="estimateDetailTO" type="com.project.aesup.logistics.sales.to.EstimateDetailTO"/>
+	
+	<resultMap id="estimateDetailResult" class="estimateDetailTO">
+	   <result property="description" column="DESCRIPTION"/>
+	   <result property="dueDateOfEstimate" column="DUE_DATE_OF_ESTIMATE"/>
+	   <result property="estimateAmount" column="ESTIMATE_AMOUNT"/>
+	   <result property="estimateDetailNo" column="ESTIMATE_DETAIL_NO"/>
+	   <result property="estimateNo" column="ESTIMATE_NO"/>
+	   <result property="itemCode" column="ITEM_CODE"/>
+	   <result property="itemName" column="ITEM_NAME"/>
+	   <result property="sumPriceOfEstimate" column="SUM_PRICE_OF_ESTIMATE"/>
+	   <result property="unitOfEstimate" column="UNIT_OF_ESTIMATE"/>
+	   <result property="unitPriceOfEstimate" column="UNIT_PRICE_OF_ESTIMATE"/>
+	   <result property="sumPriceOfEstimate" column="SUM_PRICE_OF_ESTIMATE"/>
+	</resultMap>
+	
+	
+	<select id="selectEstimateDetailList" parameterClass="String" resultMap="estimateDetailResult">
+		SELECT * FROM ESTIMATE_DETAIL WHERE ESTIMATE_NO =#estimateNo#
+	</select>
+	
+	<resultMap id="estimateDetailNoResult" class="estimateDetailTO" >
+		<result property="estimateDetailNo" column="ESTIMATE_DETAIL_NO" jdbcType="VARCHAR" javaType="string" />			
+	</resultMap>
+	
+	<select id="selectEstimateDetailCount"  parameterClass="String" resultMap="estimateDetailNoResult">
+		SELECT ESTIMATE_DETAIL_NO FROM ESTIMATE_DETAIL WHERE ESTIMATE_NO = #estimateNo#
+	</select>
+	
+	<insert id="insertEstimateDetail" parameterClass="estimateDetailTO" >
+		Insert into ESTIMATE_DETAIL
+			(ESTIMATE_DETAIL_NO, ESTIMATE_NO, ITEM_CODE, ITEM_NAME,
+			UNIT_OF_ESTIMATE, DUE_DATE_OF_ESTIMATE, ESTIMATE_AMOUNT,
+			UNIT_PRICE_OF_ESTIMATE, SUM_PRICE_OF_ESTIMATE, DESCRIPTION)
+		values ( #estimateDetailNo:VARCHAR# , #estimateNo:VARCHAR# , #itemCode:VARCHAR# ,
+			#itemName:NVARCHAR# , #unitOfEstimate:VARCHAR# , #dueDateOfEstimate:VARCHAR# , 
+			#estimateAmount:INTEGER# , #unitPriceOfEstimate:INTEGER# , #sumPriceOfEstimate:INTEGER# , 
+			#description:NVARCHAR# )
+	</insert>
+	
+	<update id="updateEstimateDetail" parameterClass="estimateDetailTO" >
+		UPDATE ESTIMATE_DETAIL SET 
+			ITEM_CODE = #itemCode:VARCHAR# , 
+			ITEM_NAME = #itemName:NVARCHAR# , 
+			UNIT_OF_ESTIMATE = #unitOfEstimate:VARCHAR# , 
+			DUE_DATE_OF_ESTIMATE = #dueDateOfEstimate:VARCHAR# , 
+			ESTIMATE_AMOUNT = #estimateAmount:INTEGER# , 
+			UNIT_PRICE_OF_ESTIMATE = #unitPriceOfEstimate:INTEGER# , 
+			SUM_PRICE_OF_ESTIMATE = #sumPriceOfEstimate:INTEGER# , 
+			DESCRIPTION = #description:NVARCHAR# 
+		WHERE ESTIMATE_DETAIL_NO = #estimateDetailNo#
+	</update>
+	
+	<delete id="deleteEstimateDetail" parameterClass="estimateDetailTO" >
+		DELETE FROM ESTIMATE_DETAIL 
+		WHERE ESTIMATE_DETAIL_NO = #estimateDetailNo#
+	</delete>
+
+</sqlMap>

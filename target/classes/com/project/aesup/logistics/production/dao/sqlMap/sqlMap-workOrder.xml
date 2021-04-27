@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="workOrder">
+ 
+	<typeAlias alias="workOrderableMrpListTO" type="com.project.aesup.logistics.production.to.WorkOrderableMrpListTO"/>
+	
+	<resultMap id="getWorkOrderableMrpListResult" class="workOrderableMrpListTO">
+		<result property="mrpNo" column="MRP_NO"/>
+		<result property="mpsNo" column="MPS_NO"/>
+		<result property="mrpGatheringNo" column="MRP_GATHERING_NO"/>
+		<result property="itemClassification" column="ITEM_CLASSIFICATION"/>
+		<result property="itemCode" column="ITEM_CODE"/>
+		<result property="itemName" column="ITEM_NAME"/>
+		<result property="unitOfMrp" column="UNIT_OF_MRP"/>
+		<result property="requiredAmount" column="REQUIRED_AMOUNT"/>
+		<result property="orderDate" column="ORDER_DATE"/>
+		<result property="requiredDate" column="REQUIRED_DATE"/>
+	</resultMap>
+	
+	<parameterMap class="map" id="getWorkOrderableMrpListParameter">
+		<parameter property="errorCode" mode="OUT" javaType="java.lang.Integer" jdbcType="DECIMAL"/>
+		<parameter property="errorMsg" mode="OUT" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<parameter property="result" mode="OUT" javaType="java.sql.ResultSet" jdbcType="ORACLECURSOR"/>
+	</parameterMap>
+	 
+	<procedure id="getWorkOrderableMrpList" 
+		parameterMap="getWorkOrderableMrpListParameter" 
+		resultMap="getWorkOrderableMrpListResult">
+		{call P_WORK_ORDERABLE_MRP_LIST(?,?,?)}			
+	</procedure>
+	
+	<typeAlias alias="workOrderSimulationTO" type="com.project.aesup.logistics.production.to.WorkOrderSimulationTO"/>
+	
+	<resultMap id="getWorkOrderSimulationListResult" class="workOrderSimulationTO">
+		<result property="mrpNo" column="MRP_NO"/>
+		<result property="mpsNo" column="MPS_NO"/>
+		<result property="mrpGatheringNo" column="MRP_GATHERING_NO"/>
+		<result property="itemClassification" column="ITEM_CLASSIFICATION"/>
+		<result property="itemCode" column="ITEM_CODE"/>
+		<result property="itemName" column="ITEM_NAME"/>
+		<result property="unitOfMrp" column="UNIT_OF_MRP"/>
+		<result property="inputAmount" column="INPUT_AMOUNT"/>
+		<result property="requiredAmount" column="REQUIRED_AMOUNT"/>
+		<result property="stockAfterWork" column="STOCK_AFTER_WORK"/>
+		<result property="orderDate" column="ORDER_DATE"/>
+		<result property="requiredDate" column="REQUIRED_DATE"/>
+	</resultMap>
+	
+	<parameterMap class="map" id="getWorkOrderSimulationListParameter">
+		<parameter property="mrpNo" mode="IN" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<parameter property="errorCode" mode="OUT" javaType="java.lang.Integer" jdbcType="DECIMAL"/>
+		<parameter property="errorMsg" mode="OUT" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<parameter property="result" mode="OUT" javaType="java.sql.ResultSet" jdbcType="ORACLECURSOR"/>
+	</parameterMap>
+	 
+	<procedure id="getWorkOrderSimulationList" 
+		parameterMap="getWorkOrderSimulationListParameter" 
+		resultMap="getWorkOrderSimulationListResult">
+		{call P_WORK_ORDER_SIMULATION(?,?,?,?)}
+	</procedure>
+	
+	<parameterMap class="map" id="workOrderParameter">
+		<parameter property="errorCode" mode="OUT" javaType="java.lang.Integer" jdbcType="DECIMAL"/>
+		<parameter property="errorMsg" mode="OUT" javaType="java.lang.String" jdbcType="VARCHAR"/>
+	</parameterMap>
+	 
+	<procedure id="doWorkOrder" parameterMap="workOrderParameter">
+		{call P_WORK_ORDER(?,?)}
+	</procedure>
+	
+	<typeAlias alias="workOrderInfoTO" type="com.project.aesup.logistics.production.to.WorkOrderInfoTO"/>
+	
+	<resultMap id="workOrderInfoResult" class="workOrderInfoTO">
+		<result property="workOrderNo" column="WORK_ORDER_NO"/>
+		<result property="mrpNo" column="MRP_NO"/>
+		<result property="mpsNo" column="MPS_NO"/>
+		<result property="mrpGatheringNo" column="MRP_GATHERING_NO"/>
+		<result property="itemClassification" column="ITEM_CLASSIFICATION"/>
+		<result property="itemCode" column="ITEM_CODE"/>
+		<result property="itemName" column="ITEM_NAME"/>
+		<result property="unitOfMrp" column="UNIT_OF_MRP"/>
+		<result property="requiredAmount" column="REQUIRED_AMOUNT"/>
+	</resultMap>
+	
+	<select id="selectWorkOrderInfoList" resultMap="workOrderInfoResult">
+		select * 
+		from work_order_info 
+		WHERE COMPLETION_STATUS IS NULL
+	</select>
+	
+	
+	<typeAlias alias="productionPerformanceInfoTO" type="com.project.aesup.logistics.production.to.ProductionPerformanceInfoTO"/>
+	
+	<resultMap id="productionPerformanceInfoResult" class="productionPerformanceInfoTO">
+		<result property="workOrderCompletionDate" column="WORK_ORDER_COMPLETION_DATE"/>
+		<result property="workOrderNo" column="WORK_ORDER_NO"/>
+		<result property="mpsNo" column="MPS_NO"/>
+		<result property="contractDetailNo" column="CONTRACT_DETAIL_NO"/>
+		<result property="itemClassification" column="ITEM_CLASSIFICATION"/>
+		<result property="itemCode" column="ITEM_CODE"/>
+		<result property="itemName" column="ITEM_NAME"/>
+		<result property="unit" column="UNIT"/>
+		<result property="workOrderAmount" column="WORK_ORDER_AMOUNT"/>
+		<result property="actualCompletionAmount" column="ACTUAL_COMPLETION_AMOUNT"/>
+		<result property="workSuccessRate" column="WORK_SUCCESS_RATE"/>
+	</resultMap>
+	
+	<select id="selectProductionPerformanceInfoList" resultMap="productionPerformanceInfoResult">
+		SELECT * 
+		FROM PRODUCTION_PERFORMANCE 
+		order by work_order_completion_date,work_order_no desc
+	</select>
+	
+	<parameterMap class="map" id="workOrderParameter">
+	<parameter property="workOrderNo" mode="IN" javaType="java.lang.String" jdbcType="VARCHAR"/>
+	<parameter property="actualCompletionAmount" mode="IN" javaType="java.lang.String" jdbcType="VARCHAR"/>
+	<parameter property="errorCode" mode="OUT" javaType="java.lang.Integer" jdbcType="DECIMAL"/>
+	<parameter property="errorMsg" mode="OUT" javaType="java.lang.String" jdbcType="VARCHAR"/>
+	</parameterMap>
+	 
+	<procedure id="workOrderCompletion" parameterMap="workOrderParameter">
+		{call P_WORK_ORDER_COMPLETION(?,?,?,?)}	
+	</procedure>
+
+</sqlMap>

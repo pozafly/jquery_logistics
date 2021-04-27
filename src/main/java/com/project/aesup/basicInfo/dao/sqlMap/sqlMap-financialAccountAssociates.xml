@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="financialAccountAssociates">
+
+<typeAlias alias="financialAccountAssociatesTO" type="com.project.aesup.basicInfo.to.FinancialAccountAssociatesTO"/>
+
+<resultMap id="financialAccountAssociatesResult" class="financialAccountAssociatesTO">
+
+    <result property="accountAssociatesCode" column="ACCOUNT_ASSOCIATES_CODE" />
+	<result property="workplaceCode" column="WORKPLACE_CODE" />
+	<result property="accountAssociatesName" column="ACCOUNT_ASSOCIATES_NAME" />
+	<result property="accountAssociatesType" column="ACCOUNT_ASSOCIATES_TYPE" />
+	<result property="accountNumber" column="ACCOUNT_NUMBER" />	
+	<result property="accountOpenPlace" column="ACCOUNT_OPEN_PLACE" />	
+	<result property="cardNumber" column="CARD_NUMBER" />	
+	<result property="cardType" column="CARD_TYPE" />
+	<result property="cardMemberName" column="CARD_MEMBER_NAME" />
+	<result property="cardOpenPlace" column="CARD_OPEN_PLACE" />
+	<result property="businessLicenseNumber" column="BUSINESS_LICENSE_NUMBER" />
+	<result property="financialInstituteCode" column="FINANCIAL_INSTITUTE_CODE" />
+	<result property="financialInstituteName" column="FINANCIAL_INSTITUTE_NAME" />
+	<result property="financialAccountNote" column="FINANCIAL_ACCOUNT_NOTE" />
+
+</resultMap>
+
+<select id="selectFinancialAccountAssociatesListByCompany" resultMap="financialAccountAssociatesResult">
+	SELECT * FROM FINANCIAL_ACCOUNT_ASSOCIATES
+</select>
+
+<select id="selectFinancialAccountAssociatesListByWorkplace" parameterClass="string" resultMap="financialAccountAssociatesResult">
+	SELECT * FROM FINANCIAL_ACCOUNT_ASSOCIATES WHERE WORKPLACE_CODE = #workpalceCode#
+</select>
+
+<insert id="insertFinancialAccountAssociates" parameterClass="financialAccountAssociatesTO">
+	Insert into FINANCIAL_ACCOUNT_ASSOCIATES ( ACCOUNT_ASSOCIATES_CODE ,
+		WORKPLACE_CODE , ACCOUNT_ASSOCIATES_NAME , ACCOUNT_ASSOCIATES_TYPE ,
+		ACCOUNT_NUMBER , ACCOUNT_OPEN_PLACE , CARD_NUMBER , CARD_TYPE ,
+		CARD_MEMBER_NAME , CARD_OPEN_PLACE , BUSINESS_LICENSE_NUMBER ,
+		FINANCIAL_INSTITUTE_CODE , FINANCIAL_INSTITUTE_NAME , FINANCIAL_ACCOUNT_NOTE ) 
+	values ( #accountAssociatesCode# , #workplaceCode# , 
+	#accountAssociatesName# , #accountAssociatesType# , 
+	#accountNumber# , #accountOpenPlace# , #cardNumber# , 
+	#cardType# , #cardMemberName# , #cardOpenPlace# , 
+	#businessLicenseNumber# , #financialInstituteCode# , 
+	#financialInstituteName# , #financialAccountNote# )
+</insert>
+
+<update id="updateFinancialAccountAssociates" parameterClass="financialAccountAssociatesTO">
+	UPDATE FINANCIAL_ACCOUNT_ASSOCIATES SET 
+		WORKPLACE_CODE = #workplaceCode# ,
+		ACCOUNT_ASSOCIATES_NAME = #accountAssociatesName# , 
+		ACCOUNT_ASSOCIATES_TYPE = #accountAssociatesType# , 
+		ACCOUNT_NUMBER = #accountNumber# , 
+		ACCOUNT_OPEN_PLACE = #accountOpenPlace# , 
+		CARD_NUMBER = #cardNumber# , 
+		CARD_TYPE = #cardType# ,
+		CARD_MEMBER_NAME = #cardMemberName# , 
+		CARD_OPEN_PLACE = #cardOpenPlace# , 
+		BUSINESS_LICENSE_NUMBER = #businessLicenseNumber# ,
+		FINANCIAL_INSTITUTE_CODE = #financialInstituteCode# , 
+		FINANCIAL_INSTITUTE_NAME = #financialInstituteName# ,
+		FINANCIAL_ACCOUNT_NOTE = #financialAccountNote# 
+	WHERE ACCOUNT_ASSOCIATES_CODE = #accountAssociatesCode#
+</update>
+
+<delete id="deleteFinancialAccountAssociates" parameterClass="financialAccountAssociatesTO">
+	DELETE FROM FINANCIAL_ACCOUNT_ASSOCIATES WHERE ACCOUNT_ASSOCIATES_CODE = #accountAssociatesCode#
+</delete>
+
+</sqlMap>

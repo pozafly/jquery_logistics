@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="report">
+
+<typeAlias alias="estimateReportTO" type="com.project.aesup.base.to.EstimateReportTO"/>
+
+<resultMap id="estimateReportResult" class="estimateReportTO">
+  <result property="estimateNo" column="ESTIMATE_NO"/>
+  <result property="estimateDate" column="ESTIMATE_DATE"/>
+  <result property="unitOfEstimate" column="UNIT_OF_ESTIMATE"/>
+  <result property="estimateAmount" column="ESTIMATE_AMOUNT"/>
+  <result property="unitPriceOfEstimate" column="UNIT_PRICE_OF_ESTIMATE"/>
+  <result property="sumPriceOfEstimate" column="SUM_PRICE_OF_ESTIMATE"/>
+  <result property="itemCode" column="ITEM_CODE"/>
+  <result property="itemName" column="ITEM_NAME"/>
+  <result property="customerName" column="CUSTOMER_NAME"/>
+  <result property="customerTelNumber" column="CUSTOMER_TEL_NUMBER"/>
+  <result property="customerFaxNumber" column="CUSTOMER_FAX_NUMBER"/>
+  <result property="tax" column="TAX"/>
+  <result property="totalAmount" column="TOTAL_AMOUNT"/>
+  <result property="totalEstimatePrice" column="TOTAL_ESTIMATE_PRICE"/>
+  <result property="totalEstimatePriceWithTax" column="TOTAL_ESTIMATE_PRICE_WITH_TAX"/>
+ 
+</resultMap>
+
+   <typeAlias alias="contractReportTO" type="com.project.aesup.base.to.ContractReportTO"/>
+
+<resultMap id="contractReportResult" class="contractReportTO">
+  <result property="contractNo" column="CONTRACT_NO"/>
+  <result property="contractDate" column="CONTRACT_DATE"/>
+  <result property="itemCode" column="ITEM_CODE"/>
+  <result property="itemName" column="ITEM_NAME"/>
+  <result property="unitPriceOfContract" column="UNIT_PRICE_OF_CONTRACT"/>
+  <result property="sumPriceOfContract" column="SUM_PRICE_OF_CONTRACT"/>
+  <result property="unitOfContract" column="UNIT_OF_CONTRACT"/>
+  <result property="contractAmount" column="CONTRACT_AMOUNT"/>
+  <result property="businessLicenseNumber" column="BUSINESS_LICENSE_NUMBER"/>
+  <result property="customerName" column="CUSTOMER_NAME"/>
+  <result property="customerCeo" column="CUSTOMER_CEO"/>
+  <result property="customerBusinessConditions" column="CUSTOMER_BUSINESS_CONDITIONS"/>
+  <result property="customerBusinessItems" column="CUSTOMER_BUSINESS_ITEMS"/>
+  <result property="customerBasicAddress" column="CUSTOMER_BASIC_ADDRESS"/>
+  <result property="tax" column="TAX"/>
+  <result property="totalAmount" column="TOTAL_AMOUNT"/>
+  <result property="sumPrice" column="SUM_PRICE"/>
+  <result property="sumAmount" column="SUM_AMOUNT"/>
+  <result property="sumTax" column="SUM_TAX"/>
+  <result property="sumTotalAmount" column="SUM_TOTAL_AMOUNT"/>
+  
+</resultMap>
+   
+   
+
+<select id="selectEstimateReport" resultMap="estimateReportResult" parameterClass="string" >
+
+	SELECT E.ESTIMATE_NO, E.ESTIMATE_DATE, D.UNIT_OF_ESTIMATE,
+	D.ESTIMATE_AMOUNT,
+	D.UNIT_PRICE_OF_ESTIMATE, D.SUM_PRICE_OF_ESTIMATE, I.ITEM_CODE, I.ITEM_NAME,
+	C.CUSTOMER_NAME, C.CUSTOMER_TEL_NUMBER, C.CUSTOMER_FAX_NUMBER,
+	D.SUM_PRICE_OF_ESTIMATE * 0.1 AS TAX, ( D.UNIT_PRICE_OF_ESTIMATE *
+	D.ESTIMATE_AMOUNT ) + ( D.SUM_PRICE_OF_ESTIMATE * 0.1 ) AS TOTAL_AMOUNT , SUM
+	( ( D.UNIT_PRICE_OF_ESTIMATE * D.ESTIMATE_AMOUNT ) ) OVER ( PARTITION BY
+	E.ESTIMATE_NO ORDER BY E.ESTIMATE_NO ROWS BETWEEN UNBOUNDED PRECEDING
+	AND
+	UNBOUNDED FOLLOWING ) AS TOTAL_ESTIMATE_PRICE, SUM ( (
+	D.UNIT_PRICE_OF_ESTIMATE * D.ESTIMATE_AMOUNT ) + ( D.SUM_PRICE_OF_ESTIMATE *
+	0.1 ) ) OVER ( PARTITION BY E.ESTIMATE_NO ORDER BY E.ESTIMATE_NO ROWS
+	BETWEEN
+	UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING ) AS
+	TOTAL_ESTIMATE_PRICE_WITH_TAX FROM ESTIMATE E INNER JOIN ESTIMATE_DETAIL D ON
+	E.ESTIMATE_NO = D.ESTIMATE_NO INNER JOIN CUSTOMER C ON E.CUSTOMER_CODE =
+	C.CUSTOMER_CODE INNER JOIN ITEM I ON D.ITEM_CODE = I.ITEM_CODE WHERE
+	E.ESTIMATE_NO =#estimateNo#
+		
+</select>
+
+
+<select id="selectContractReport" resultMap="contractReportResult" parameterClass="string">
+WITH CONTRACT_INFO AS
+( SELECT
+C.CONTRACT_NO, C.CONTRACT_DATE, D.ITEM_CODE, D.ITEM_NAME, 
+D.UNIT_PRICE_OF_CONTRACT, D.SUM_PRICE_OF_CONTRACT, 
+D.UNIT_OF_CONTRACT, D.CONTRACT_AMOUNT, CU.BUSINESS_LICENSE_NUMBER, CU.CUSTOMER_NAME, CU.CUSTOMER_CEO, CU.CUSTOMER_BASIC_ADDRESS, 
+CU.CUSTOMER_BUSINESS_CONDITIONS, CU.CUSTOMER_BUSINESS_ITEMS,
+( D.SUM_PRICE_OF_CONTRACT * 0.1 ) AS TAX,
+( ( D.UNIT_PRICE_OF_CONTRACT * D.CONTRACT_AMOUNT) + ( D.SUM_PRICE_OF_CONTRACT * 0.1 ) ) AS TOTAL_AMOUNT
+FROM
+CONTRACT C INNER JOIN CONTRACT_DETAIL D ON C.CONTRACT_NO = D.CONTRACT_NO
+INNER JOIN CUSTOMER CU ON C.CUSTOMER_CODE = CU.CUSTOMER_CODE
+INNER JOIN ITEM I ON D.ITEM_CODE = I.ITEM_CODE
+WHERE C.CONTRACT_NO = #contractNo# ),
+
+CONTRACT_SUM AS
+( SELECT SUM(SUM_PRICE_OF_CONTRACT) AS SUM_PRICE, SUM(CONTRACT_AMOUNT) AS SUM_AMOUNT,
+SUM(SUM_PRICE_OF_CONTRACT)*0.1 AS SUM_TAX,
+(SUM(SUM_PRICE_OF_CONTRACT)*0.1)+SUM(SUM_PRICE_OF_CONTRACT) AS SUM_TOTAL_AMOUNT
+FROM
+CONTRACT_INFO )
+
+SELECT * FROM CONTRACT_INFO, CONTRACT_SUM
+</select>
+
+
+</sqlMap>

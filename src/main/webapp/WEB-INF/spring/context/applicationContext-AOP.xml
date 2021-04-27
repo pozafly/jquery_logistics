@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+	
+	<tx:advice id="trasactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+		
+			<!-- update, delete, insert 하나의 트랜잭션으로 처리하니까 -->
+			<tx:method name="*" propagation="REQUIRED"/>
+			
+			<!-- select 문은 읽기 전용으로 세팅 -->
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="show*" read-only="true"/>
+			<tx:method name="select*" read-only="true"/>
+			<tx:method name="open*" read-only="true"/>
+			<tx:method name="accessToAuthority*" read-only="true"/>
+			 
+		</tx:attributes>
+	</tx:advice>
+	
+	<bean id="commonAdvice" class="com.project.aesup.common.advice.CommonAdvice"/>
+	
+	<aop:config>
+		<aop:pointcut id="LoggingPointcut" 
+			expression="execution(* com.project.aesup..serviceFacade.*.*(..)) or
+						execution(* com.project.aesup..applicationService.*.*(..)) or
+						execution(* com.project.aesup..dao.*.*(..))" />
+		<aop:pointcut id="ExceptionPointcut" 
+			expression="execution(* com.project.aesup..serviceFacade.*.*(..))" />
+
+
+		<aop:aspect id="commonAspect" ref="commonAdvice">
+			<aop:around method="logging" pointcut-ref="LoggingPointcut"/>
+			<aop:after-throwing method="afterThrowing" pointcut-ref="ExceptionPointcut" throwing="ex"/>
+		</aop:aspect>
+	</aop:config>
+	
+
+</beans>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="estimate">
+
+	<typeAlias alias="estimateTO" type="com.project.aesup.logistics.sales.to.EstimateTO"/>
+	
+	<resultMap id="estimateResult" class="estimateTO" groupBy="estimateNo">
+	  <result property="contractStatus" column="CONTRACT_STATUS"/>
+	  <result property="customerCode" column="CUSTOMER_CODE"/>
+	  <result property="description" column="ESTIMATE_DESCRIPTION"/>
+	  <result property="effectiveDate" column="EFFECTIVE_DATE"/>
+	  <result property="estimateDate" column="ESTIMATE_DATE"/>
+	  <result property="estimateNo" column="ESTIMATE_NO"/>
+	  <result property="estimateRequester" column="ESTIMATE_REQUESTER"/>
+	  <result property="personCodeInCharge" column="PERSON_CODE_IN_CHARGE"/>
+	  <result property="estimateDetailTOList" resultMap="estimateDetail.estimateDetailResult" javaType="java.util.ArrayList"/>  
+	</resultMap>
+	
+	<select id="selectEstimateList" remapResults="true" parameterClass="map" resultMap="estimateResult">
+	     WITH SEARCH_ESTIMATE AS (
+		SELECT * 
+		FROM ESTIMATE 
+		WHERE ( CASE #dateSearchCondition# 
+				WHEN 'estimateDate' THEN TO_DATE(ESTIMATE_DATE, 'YYYY-MM-DD') 
+				WHEN 'effectiveDate' THEN TO_DATE(EFFECTIVE_DATE, 'YYYY-MM-DD') END )
+			BETWEEN TO_DATE(#startDate#,'YYYY-MM-DD') AND TO_DATE(#endDate#,'YYYY-MM-DD')
+		)
+		
+		SELECT E1.ESTIMATE_NO, E1.CUSTOMER_CODE, E1.ESTIMATE_DATE, E1.CONTRACT_STATUS, E1.ESTIMATE_REQUESTER,
+		    E1.EFFECTIVE_DATE, E1.PERSON_CODE_IN_CHARGE, E1.DESCRIPTION AS ESTIMATE_DESCRIPTION,
+		    E2.ESTIMATE_DETAIL_NO, E2.ITEM_CODE, E2.ITEM_NAME, E2.UNIT_OF_ESTIMATE, 
+		    E2.DUE_DATE_OF_ESTIMATE, E2.ESTIMATE_AMOUNT, E2.UNIT_PRICE_OF_ESTIMATE, 
+		    E2.SUM_PRICE_OF_ESTIMATE, E2.DESCRIPTION
+		FROM SEARCH_ESTIMATE E1, ESTIMATE_DETAIL E2
+		WHERE E1.ESTIMATE_NO = E2.ESTIMATE_NO (+)
+		ORDER BY E1.ESTIMATE_NO
+	</select>
+	
+	<select id="selectEstimate" parameterClass="String" resultMap="estimateResult">
+		SELECT * FROM ESTIMATE WHERE ESTIMATE_NO =#estimateNo#
+	</select>
+	
+	
+	<select id="selectEstimateCount" parameterClass="String" resultClass="integer">
+		SELECT COUNT(*) FROM ESTIMATE WHERE ESTIMATE_DATE =TO_DATE(#estimateDate#,'YYYY-MM-DD')
+	</select>
+	
+	<insert id="insertEstimate" parameterClass="estimateTO" >
+		Insert into ESTIMATE 
+		( ESTIMATE_NO , CUSTOMER_CODE , ESTIMATE_DATE , 
+			CONTRACT_STATUS , ESTIMATE_REQUESTER , EFFECTIVE_DATE , 
+			PERSON_CODE_IN_CHARGE , DESCRIPTION) 
+		values ( #estimateNo:VARCHAR# , #customerCode:VARCHAR# , #estimateDate:VARCHAR# , 
+		#contractStatus:VARCHAR# , #estimateRequester:NVARCHAR# , #effectiveDate:VARCHAR# , 
+		#personCodeInCharge:VARCHAR# , #description:NVARCHAR# )
+	</insert>
+	
+	<update id="updateEstimate" parameterClass="estimateTO" >
+		UPDATE ESTIMATE SET 
+			CUSTOMER_CODE = #customerCode:VARCHAR# , 
+			ESTIMATE_DATE = #estimateDate:VARCHAR# ,
+			CONTRACT_STATUS = #contractStatus:VARCHAR# , 
+			ESTIMATE_REQUESTER = #estimateRequester:NVARCHAR# ,
+			EFFECTIVE_DATE = #effectiveDate:VARCHAR# , 
+			PERSON_CODE_IN_CHARGE = #personCodeInCharge:VARCHAR# ,
+			DESCRIPTION = #description:NVARCHAR# 
+		WHERE ESTIMATE_NO = #estimateNo#
+	</update>
+	
+	<update id="changeContractStatusOfEstimate" parameterClass="map" >
+		UPDATE ESTIMATE SET 
+			CONTRACT_STATUS = #contractStatus:VARCHAR#
+		WHERE ESTIMATE_NO = #estimateNo#
+	</update> 
+
+
+</sqlMap>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="UrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="order" value="1" />
+		<property name="alwaysUseFullPath" value="false"/>
+		
+		<property name="mappings">
+			<props>
+  				<prop key="/searchCompany.do">companyController</prop>
+				<prop key="/batchCompanyListProcess.do">companyController</prop>
+				
+				<prop key="/searchWorkplace.do">workplaceController</prop>
+				<prop key="/batchWorkplaceListProcess.do">workplaceController</prop>
+				
+				<prop key="/searchDepartment.do">departmentController</prop>
+				<prop key="/batchDepartmentListProcess.do">departmentController</prop>
+				
+				<prop key="/searchCustomer.do">customerController</prop>
+				<prop key="/batchCustomerListProcess.do">customerController</prop>
+				
+				<prop key="/searchFinancialAccountAssociatesList.do">financialAccountAssociatesController</prop>
+				<prop key="/batchFinancialAccountAssociatesListProcess.do">financialAccountAssociatesController</prop>
+				
+				<prop key="/companyInfo.html">urlFilenameViewController</prop>
+				<prop key="/workplaceInfo.html">urlFilenameViewController</prop>
+				<prop key="/deptInfo.html">urlFilenameViewController</prop>
+				<prop key="/clientInfo.html">urlFilenameViewController</prop>
+			</props>
+		</property>
+	</bean>
+	
+    
+    <bean id="ViewResolver" 
+    	class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/basicInfo/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	
+	<!-- controller -->
+	<bean id="companyController" class="com.project.aesup.basicInfo.controller.CompanyController" p:cacheSeconds="0">
+		<property name="orgSF" ref="organizationServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+	
+	<bean id="workplaceController" class="com.project.aesup.basicInfo.controller.WorkplaceController" p:cacheSeconds="0">
+		<property name="orgSF" ref="organizationServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+	
+	<bean id="departmentController" class="com.project.aesup.basicInfo.controller.DepartmentController" p:cacheSeconds="0">
+		<property name="orgSF" ref="organizationServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+	
+	<bean id="customerController" class="com.project.aesup.basicInfo.controller.CustomerController" p:cacheSeconds="0">
+		<property name="cooperatorSF" ref="cooperatorServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+	
+	<bean id="financialAccountAssociatesController" class="com.project.aesup.basicInfo.controller.FinancialAccountAssociatesController" p:cacheSeconds="0">
+		<property name="cooperatorSF" ref="cooperatorServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+
+</beans>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- ServiceFacade -->
+	<bean id="hrServiceFacadeImpl" class="com.project.aesup.hr.serviceFacade.HrServiceFacadeImpl">
+		<property name="empAS" ref="empApplicationServiceImpl" />
+	</bean>
+	
+	<!-- applicationService -->
+	<bean id="empApplicationServiceImpl" class="com.project.aesup.hr.applicationService.EmpApplicationServiceImpl">
+		<property name="empBasicDAO" ref="employeeBasicDAOImpl"/>
+		<property name="empDetailDAO" ref="employeeDetailDAOImpl"/>
+		<property name="empSecretDAO" ref="employeeSecretDAOImpl"/>
+		<property name="empSearchingDAO" ref="empSearchingDAOImpl"/>
+		<property name="codeDetailDAO" ref="codeDetailDAOImpl"/>
+	</bean>
+	
+	<!-- DAOImpl -->
+
+	
+	<bean id="empSearchingDAOImpl" class="com.project.aesup.hr.dao.EmpSearchingDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+	<bean id="empSecretDAOImpl" class="com.project.aesup.hr.dao.EmployeeSecretDAOImpl" 
+		parent="iBatisSupportDao">
+	</bean>
+
+	<bean id="employeeBasicDAOImpl" class="com.project.aesup.hr.dao.EmployeeBasicDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+		
+	<bean id="employeeDetailDAOImpl" class="com.project.aesup.hr.dao.EmployeeDetailDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+		
+	<bean id="employeeSecretDAOImpl" class="com.project.aesup.hr.dao.EmployeeSecretDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+		
+	<bean id="codeDetailDAOImpl" class="com.project.aesup.base.dao.CodeDetailDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+
+</beans>

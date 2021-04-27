@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="usermenu">
+
+	<typeAlias alias="userMenuTO" type="com.project.aesup.authorityManager.to.UserMenuTO"/>
+	<resultMap id="userMenuResult" class="userMenuTO">
+	    <result property="no" column="NO" jdbcType="INTEGER" />
+	    <result property="menuLevel" column="MENU_LEVEL" jdbcType="INTEGER" />
+	    <result property="menuOrder" column="MENU_ORDER" jdbcType="INTEGER" />
+	    <result property="menuName" column="MENU_NAME" jdbcType="VARCHAR" />
+	    <result property="leaf" column="LEAF" jdbcType="INTEGER" />
+	    <result property="url" column="URL" jdbcType="VARCHAR" />
+	    <result property="isAccessDenied" column="IS_ACCESS_DENIED" jdbcType="VARCHAR" />
+	
+	</resultMap>
+	
+	<select id="selectUserMenuCodeList" parameterClass="map" resultMap="userMenuResult">
+		SELECT * 
+		FROM
+		(SELECT ROWNUM AS NO, LEVEL AS MENU_LEVEL, CONNECT_BY_ISLEAF LEAF, 
+		        MENU_ORDER, MENU_NAME, URL, IS_ACCESS_DENIED 
+		    FROM ( SELECT 
+		                 T1.MENU_CODE, URL, MENU_NAME, MENU_ORDER, 
+		                 IS_ACCESS_DENIED, IS_ACCESS_DENIED_NOT_PRINTED, PARENT_MENU_CODE
+		             FROM MENU T1, MENU_AVAILABLE_BY_POSITION T2
+		             WHERE T1.MENU_CODE = T2.MENU_CODE  AND T1.WORKPLACE_CODE =#workplaceCode#
+		              AND DEPT_CODE =#deptCode#    AND POSITION_CODE =#positionCode# 
+		              AND IS_ACCESS_DENIED_NOT_PRINTED IS NULL ) 
+		 START WITH PARENT_MENU_CODE IS NULL 
+		 CONNECT BY PRIOR MENU_CODE = PARENT_MENU_CODE ORDER SIBLINGS BY MENU_ORDER )
+		 WHERE ( MENU_LEVEL = 3 ) 
+		 OR ( MENU_LEVEL = 2 AND LEAF = 0 ) 
+		 OR ( MENU_LEVEL = 2 AND LEAF = 1 AND URL IS NOT NULL )
+		 OR ( MENU_LEVEL = 1 AND LEAF = 0 ) 
+		 OR MENU_ORDER =0   
+		 ORDER BY NO
+	</select>
+
+</sqlMap>

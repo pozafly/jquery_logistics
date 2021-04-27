@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="contract">
+
+	<typeAlias alias="contractTO" type="com.project.aesup.logistics.sales.to.ContractTO" />
+
+	<resultMap id="contractResult" class="contractTO" groupBy="contractNo">
+		<result property="contractNo" column="CONTRACT_NO" />
+		<result property="estimateNo" column="ESTIMATE_NO" />
+		<result property="contractType" column="CONTRACT_TYPE" />
+		<result property="customerCode" column="CUSTOMER_CODE" />
+		<result property="contractDate" column="CONTRACT_DATE" />
+		<result property="contractRequester"
+			column="CONTRACT_REQUESTER" />
+		<result property="personCodeInCharge"
+			column="PERSON_CODE_IN_CHARGE" />
+		<result property="description" column="DESCRIPTION" /><!-- 
+		<result property="contractDetailTOList"
+			resultMap="contractDetail.contractDetailResult"
+			javaType="java.util.ArrayList" /> -->
+	</resultMap>
+
+	<typeAlias alias="contractInfoTO" type="com.project.aesup.logistics.sales.to.ContractInfoTO" />
+
+	<resultMap id="contractInfoResult" class="contractInfoTO" groupBy="contractNo">
+		<result property="contractNo" column="CONTRACT_NO" />
+		<result property="estimateNo" column="ESTIMATE_NO" />
+		<result property="contractType" column="CONTRACT_TYPE" />
+		<result property="contractTypeName" column="CONTRACT_TYPE_NAME" />
+		<result property="customerCode" column="CUSTOMER_CODE" />
+		<result property="customerName" column="CUSTOMER_NAME" />
+		<result property="estimateDate" column="ESTIMATE_DATE" />
+		<result property="contractDate" column="CONTRACT_DATE" />
+		<result property="empNameInCharge" column="EMP_NAME_IN_CHARGE" />
+		<result property="contractRequester" column="CONTRACT_REQUESTER" />
+		<result property="personCodeInCharge" column="PERSON_CODE_IN_CHARGE" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="deliveryCompletionStatus" column="DELIVERY_COMPLETION_STATUS" /><!-- 
+		<result property="contractDetailTOList"
+			resultMap="contractDetail.contractDetailResult"
+			javaType="java.util.ArrayList" /> -->
+	</resultMap>
+
+	<select id="selectEstimateListInContractAvailable"
+		parameterClass="map" resultMap="estimate.estimateResult">
+		<![CDATA[  
+		WITH ESTIMATE_IN_CONTRACT_AVAILABLE AS (
+		    SELECT * 
+		    FROM ESTIMATE
+		    WHERE CONTRACT_STATUS IS NULL
+		        AND TO_DATE(EFFECTIVE_DATE,'YYYY-MM-DD') >= SYSDATE
+		        AND TO_DATE(ESTIMATE_DATE, 'YYYY-MM-DD')
+		            BETWEEN TO_DATE(#startDate#, 'YYYY-MM-DD') AND TO_DATE(#endDate#,'YYYY-MM-DD')
+		) 
+		
+		SELECT E1.ESTIMATE_NO, E1.CUSTOMER_CODE, E1.ESTIMATE_DATE, E1.CONTRACT_STATUS, E1.ESTIMATE_REQUESTER,
+		    E1.EFFECTIVE_DATE, E1.PERSON_CODE_IN_CHARGE, E1.DESCRIPTION AS ESTIMATE_DESCRIPTION, E2.ESTIMATE_DETAIL_NO, E2.ITEM_CODE, E2.ITEM_NAME, E2.UNIT_OF_ESTIMATE,
+		    E2.DUE_DATE_OF_ESTIMATE, E2.ESTIMATE_AMOUNT, E2.UNIT_PRICE_OF_ESTIMATE, 
+		    E2.SUM_PRICE_OF_ESTIMATE, E2.DESCRIPTION
+		FROM ESTIMATE_IN_CONTRACT_AVAILABLE E1, ESTIMATE_DETAIL E2
+		WHERE E1.ESTIMATE_NO = E2.ESTIMATE_NO (+)
+		]]>
+	</select>
+
+	<select id="selectDeliverableContractListByDate"
+		parameterClass="map" resultMap="contractInfoResult">
+		WITH CODE_DETAIL_LIST AS ( SELECT DETAIL_CODE, DETAIL_CODE_NAME FROM
+		CODE_DETAIL ) ,
+
+		CONTRACT_LIST AS ( SELECT * FROM CONTRACT WHERE CONTRACT_DATE BETWEEN
+		TO_DATE(#startDate#,'YYYY-MM-DD') AND TO_DATE(#endDate#,'YYYY-MM-DD')
+		),
+
+		ESTIMATE_LIST AS ( SELECT * FROM ESTIMATE )
+
+		SELECT
+		T1.CONTRACT_NO,
+		T1.ESTIMATE_NO,
+		T1.CONTRACT_TYPE,
+		T2.DETAIL_CODE_NAME AS CONTRACT_TYPE_NAME,
+		T1.CUSTOMER_CODE,
+		T3.DETAIL_CODE_NAME AS CUSTOMER_NAME,
+		E.ESTIMATE_DATE,
+		T1.CONTRACT_DATE,
+		T1.CONTRACT_REQUESTER,
+		T1.PERSON_CODE_IN_CHARGE,
+		T4.DETAIL_CODE_NAME AS EMP_NAME_IN_CHARGE,
+		T1.DESCRIPTION,
+		T1.DELIVERY_COMPLETION_STATUS
+		FROM CONTRACT_LIST T1 , CODE_DETAIL_LIST T2 , CODE_DETAIL_LIST
+		T3, CODE_DETAIL_LIST T4, ESTIMATE_LIST E, CONTRACT_DETAIL D
+		WHERE T1.CONTRACT_TYPE = T2.DETAIL_CODE
+		AND T1.CUSTOMER_CODE = T3.DETAIL_CODE
+		AND T1.PERSON_CODE_IN_CHARGE = T4.DETAIL_CODE
+		AND T1.ESTIMATE_NO = E.ESTIMATE_NO
+		AND D.CONTRACT_NO = T1.CONTRACT_NO
+		AND T1.DELIVERY_COMPLETION_STATUS IS NULL
+		AND D.PROCESSING_STATUS IS NOT NULL
+		AND D.OPERATION_COMPLETED_STATUS IS NOT NULL
+	</select>
+
+	<select id="selectDeliverableContractListByCustomer"
+		parameterClass="String" resultMap="contractInfoResult">
+
+		WITH CODE_DETAIL_LIST AS
+		( SELECT DETAIL_CODE, DETAIL_CODE_NAME FROM CODE_DETAIL ) ,
+
+		CONTRACT_LIST AS
+		( SELECT * FROM CONTRACT WHERE CUSTOMER_CODE = #customerCode# ) ,
+
+		ESTIMATE_LIST AS
+		( SELECT * FROM ESTIMATE )
+
+		SELECT
+		T1.CONTRACT_NO,
+		T1.ESTIMATE_NO,
+		T1.CONTRACT_TYPE,
+		T2.DETAIL_CODE_NAME AS CONTRACT_TYPE_NAME,
+		T1.CUSTOMER_CODE,
+		T3.DETAIL_CODE_NAME AS CUSTOMER_NAME,
+		E.ESTIMATE_DATE,
+		T1.CONTRACT_DATE,
+		T1.CONTRACT_REQUESTER,
+		T1.PERSON_CODE_IN_CHARGE,
+		T4.DETAIL_CODE_NAME AS EMP_NAME_IN_CHARGE,
+		T1.DESCRIPTION,
+		T1.DELIVERY_COMPLETION_STATUS
+		FROM
+		CONTRACT_LIST T1 ,
+		CODE_DETAIL_LIST T2 ,
+		CODE_DETAIL_LIST T3,
+		CODE_DETAIL_LIST T4,
+		ESTIMATE_LIST E,
+		CONTRACT_DETAIL D
+		WHERE
+		T1.CONTRACT_TYPE = T2.DETAIL_CODE
+		AND T1.CUSTOMER_CODE = T3.DETAIL_CODE
+		AND T1.PERSON_CODE_IN_CHARGE = T4.DETAIL_CODE
+		AND T1.ESTIMATE_NO = E.ESTIMATE_NO
+		AND D.CONTRACT_NO = T1.CONTRACT_NO
+		AND T1.DELIVERY_COMPLETION_STATUS IS NULL
+		AND D.PROCESSING_STATUS IS NOT NULL
+		AND D.OPERATION_COMPLETED_STATUS IS NOT NULL
+	</select>
+
+	<select id="selectContractListByDate" parameterClass="map"
+		resultMap="contractInfoResult">
+
+		WITH 
+			CODE_DETAIL_LIST AS ( SELECT DETAIL_CODE, DETAIL_CODE_NAME FROM 
+			CODE_DETAIL ) , 
+			
+			CONTRACT_LIST AS ( SELECT * FROM CONTRACT WHERE CONTRACT_DATE BETWEEN 
+			TO_DATE(#startDate#,'YYYY-MM-DD') AND TO_DATE(#endDate#,'YYYY-MM-DD') ),  
+			
+			ESTIMATE_LIST AS ( SELECT * FROM ESTIMATE )  
+			
+			SELECT T1.CONTRACT_NO, T1.ESTIMATE_NO, T1.CONTRACT_TYPE, T2.DETAIL_CODE_NAME 
+			AS CONTRACT_TYPE_NAME, T1.CUSTOMER_CODE, T3.DETAIL_CODE_NAME AS 
+			CUSTOMER_NAME, E.ESTIMATE_DATE, T1.CONTRACT_DATE, T1.CONTRACT_REQUESTER,  
+			T1.PERSON_CODE_IN_CHARGE, T4.DETAIL_CODE_NAME AS EMP_NAME_IN_CHARGE, 
+			T1.DESCRIPTION, T1.DELIVERY_COMPLETION_STATUS FROM CONTRACT_LIST T1 , CODE_DETAIL_LIST T2 , CODE_DETAIL_LIST 
+			T3, CODE_DETAIL_LIST T4, ESTIMATE_LIST E WHERE T1.CONTRACT_TYPE = 
+			T2.DETAIL_CODE AND T1.CUSTOMER_CODE = T3.DETAIL_CODE AND 
+			T1.PERSON_CODE_IN_CHARGE = T4.DETAIL_CODE AND T1.ESTIMATE_NO = E.ESTIMATE_NO
+	</select>
+
+	<select id="selectContractListByCustomer"
+		parameterClass="string" resultMap="contractInfoResult">
+
+		WITH CODE_DETAIL_LIST AS (
+
+		SELECT DETAIL_CODE, DETAIL_CODE_NAME FROM CODE_DETAIL
+
+		) ,
+		CONTRACT_LIST AS (
+
+		SELECT C1.CONTRACT_NO, C1.ESTIMATE_NO, C1.CONTRACT_TYPE, C1.CUSTOMER_CODE,
+		C1.CONTRACT_DATE, C1.CONTRACT_REQUESTER, C1.PERSON_CODE_IN_CHARGE,
+		C1.DESCRIPTION, C1.DELIVERY_COMPLETION_STATUS,
+		C2.CONTRACT_DETAIL_NO, C2.ITEM_CODE, C2.ITEM_NAME, C2.UNIT_OF_CONTRACT,
+		C2.DUE_DATE_OF_CONTRACT, C2.ESTIMATE_AMOUNT,
+		C2.UNIT_PRICE_OF_CONTRACT,
+		C2.SUM_PRICE_OF_CONTRACT, C2.MPS_APPLY_STATUS, C2.DELIVERY_COMPLETION_STATUS,
+		C2.DESCRIPTION AS CONTRACT_DETAIL_DESCRIPTION
+		FROM
+		( SELECT * FROM CONTRACT
+		WHERE CUSTOMER_CODE = #customerCode# ) C1,
+		CONTRACT_DETAIL C2
+		WHERE C1.CONTRACT_NO = C2.CONTRACT_NO (+)
+
+
+		),
+		ESTIMATE_LIST AS (
+
+		SELECT * FROM ESTIMATE
+
+		)
+
+		SELECT T1.*, T2.DETAIL_CODE_NAME AS CONTRACT_TYPE_NAME,
+		T3.DETAIL_CODE_NAME AS CUSTOMER_NAME,
+		T4.DETAIL_CODE_NAME AS EMP_NAME_IN_CHARGE,
+		E.ESTIMATE_DATE
+		FROM CONTRACT_LIST T1 , CODE_DETAIL_LIST T2 , CODE_DETAIL_LIST T3,
+		CODE_DETAIL_LIST T4, ESTIMATE_LIST E
+		WHERE T1.CONTRACT_TYPE = T2.DETAIL_CODE
+		AND T1.CUSTOMER_CODE = T3.DETAIL_CODE
+		AND T1.PERSON_CODE_IN_CHARGE = T4.DETAIL_CODE
+		AND T1.ESTIMATE_NO = E.ESTIMATE_NO
+	</select>
+
+	<select id="selectContractCount" parameterClass="string"
+		resultClass="integer">
+		SELECT COUNT(*)
+		FROM CONTRACT
+		WHERE CONTRACT_DATE = TO_DATE(#contractDate#,'YYYY-MM-DD')
+	</select>
+
+	<insert id="insertContract" parameterClass="contractTO">
+		Insert into CONTRACT
+		( CONTRACT_NO, ESTIMATE_NO, CONTRACT_TYPE, CUSTOMER_CODE,
+		CONTRACT_DATE, CONTRACT_REQUESTER, PERSON_CODE_IN_CHARGE, DESCRIPTION
+		)
+		values ( #contractNo:VARCHAR# , #estimateNo:VARCHAR# ,
+		#contractType:VARCHAR# ,
+		#customerCode:VARCHAR#, #contractDate:VARCHAR# , #contractRequester:NVARCHAR# ,
+		#personCodeInCharge:VARCHAR# , #description:NVARCHAR# )
+	</insert>
+
+	<update id="updateContract" parameterClass="contractTO">
+		UPDATE CONTRACT SET
+		ESTIMATE_NO = #estimateNo:VARCHAR# ,
+		CONTRACT_TYPE = #contractType:VARCHAR# ,
+		CUSTOMER_CODE = #customerCode:VARCHAR# ,
+		CONTRACT_DATE = #contractDate:VARCHAR# ,
+		CONTRACT_REQUESTER = #contractRequester:NVARCHAR# ,
+		PERSON_CODE_IN_CHARGE = #personCodeInCharge:VARCHAR# ,
+		DESCRIPTION = #description:NVARCHAR#
+		WHERE CONTRACT_NO = #contractNo#
+	</update>
+	
+</sqlMap>

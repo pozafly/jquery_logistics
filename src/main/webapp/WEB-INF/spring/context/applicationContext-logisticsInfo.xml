@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- ServiceFacade -->
+	<bean id="logisticsInfoServiceFacadeImpl"
+		class="com.project.aesup.logistics.logisticsInfo.serviceFacade.LogisticsInfoServiceFacadeImpl">
+		<property name="itemAS" ref="itemApplicationServiceImpl"/>
+	</bean>
+
+	<!-- applicationService -->
+	<bean id="itemApplicationServiceImpl" 
+		class="com.project.aesup.logistics.logisticsInfo.applicationService.ItemApplicationServiceImpl">
+		<property name="itemDAO" ref="itemDAOImpl"/>
+		<property name="codeDetailDAO" ref="codeDetailDAOImpl"/>
+		<property name="bomDAO" ref="bomDAOImpl"/>
+	</bean>
+	
+	<!-- DAOImpl -->
+	<bean id="itemDAOImpl" class="com.project.aesup.logistics.logisticsInfo.dao.ItemDAOImpl"
+		parent="iBatisSupportDao">
+	</bean>
+	
+</beans>

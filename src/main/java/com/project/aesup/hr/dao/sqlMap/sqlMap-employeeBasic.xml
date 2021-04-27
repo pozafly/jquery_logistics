@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="employeeBasic">
+
+	<typeAlias alias="employeeBasicTO" type="com.project.aesup.hr.to.EmployeeBasicTO"/>
+	<resultMap id="employeeBasicResult" class="employeeBasicTO">
+		<result property="companyCode" column="COMPANY_CODE" />
+		<result property="empCode" column="EMP_CODE" />
+		<result property="empName" column="EMP_NAME" />
+		<result property="empEngName" column="EMP_ENG_NAME" />
+		<result property="socialSecurityNumber" column="SOCIAL_SECURITY_NUMBER" />
+		<result property="hireDate" column="HIRE_DATE" />
+		<result property="retirementDate" column="RETIREMENT_DATE" />
+		<result property="userOrNot" column="USER_OR_NOT" />
+		<result property="birthDate" column="BIRTH_DATE" />
+		<result property="gender" column="GENDER" />
+	</resultMap>
+	
+	<select id="selectEmployeeBasicList" parameterClass="string" resultMap="employeeBasicResult">
+		SELECT * FROM EMPLOYEE_BASIC WHERE COMPANY_CODE = #companyCode#
+	</select>
+	
+	<select id="selectEmployeeBasicBean" parameterClass="map" resultMap="employeeBasicResult">
+		SELECT * FROM EMPLOYEE_BASIC WHERE COMPANY_CODE = #companyCode# AND EMP_CODE = #empCode#
+	</select>
+	
+	<insert id="insertEmployeeBasic" parameterClass="employeeBasicTO">
+		Insert into EMPLOYEE_BASIC ( COMPANY_CODE , EMP_CODE , EMP_NAME ,
+			EMP_ENG_NAME , SOCIAL_SECURITY_NUMBER , HIRE_DATE , RETIREMENT_DATE ,
+			USER_OR_NOT , BIRTH_DATE , GENDER ) 
+		values ( #companyCode# , #empCode# , #empName# , #empEngName# , 
+			#socialSecurityNumber# , #hireDate# , #retirementDate# , 
+			#userOrNot# , #birthDate# , #gender# )
+	</insert>
+ 
+ </sqlMap>

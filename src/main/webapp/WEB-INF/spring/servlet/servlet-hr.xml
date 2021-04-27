@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	
+	<bean id="urlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="order" value="1" />
+		<property name="alwaysUseFullPath" value="false"/>
+		<property name="mappings">
+			<props>
+				<prop key="/searchAllEmpList.do">empController</prop>
+				<prop key="/searchEmpInfo.do">empController</prop>
+				<prop key="/checkUserIdDuplication.do">empController</prop>
+				<prop key="/checkEmpCodeDuplication.do">empController</prop>
+				<prop key="/batchListProcess.do">empController</prop>
+				<prop key="/getNewEmpCode.do">empController</prop>
+				
+				<prop key="/empInfo.html">urlFilenameViewController</prop>
+				<prop key="/empRegister.html">urlFilenameViewController</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="ViewResolver" 
+    	class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/hr/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	
+	<!-- controller -->
+	<bean id="empController" class="com.project.aesup.hr.controller.EmpController" p:cacheSeconds="0">
+		<property name="hrSF" ref="hrServiceFacadeImpl" />
+		<property name="methodNameResolver" ref="parameterMethodNameResolver" />
+	</bean>
+	
+	
+</beans>

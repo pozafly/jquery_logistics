@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQLMap 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="codeDetail">
+
+	<typeAlias alias="codeDetailTO" type="com.project.aesup.base.to.CodeDetailTO"/>
+	<resultMap id="codeDetailResult" class="codeDetailTO">
+		<result property="codeUseCheck" column="CODE_USE_CHECK"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="detailCode" column="DETAIL_CODE"/>
+		<result property="detailCodeName" column="DETAIL_CODE_NAME"/>
+		<result property="divisionCodeNo" column="DIVISION_CODE_NO"/>
+	</resultMap>
+	
+	<select id="selectDetailCodeList" resultMap="codeDetailResult" parameterClass="string">
+		SELECT * FROM CODE_DETAIL WHERE DIVISION_CODE_NO LIKE #divisionCode#
+	</select>
+	
+	<insert id="insertDetailCode" parameterClass="codeDetailTO">
+		Insert into CODE_DETAIL
+		( DIVISION_CODE_NO , DETAIL_CODE , DETAIL_CODE_NAME , CODE_USE_CHECK , DESCRIPTION )
+		values ( #divisionCodeNo# , #detailCode# , #detailCodeName# , #codeUseCheck# , #description# )
+	</insert>
+	
+	<update id="updateDetailCode" parameterClass="codeDetailTO">
+		UPDATE CODE_DETAIL SET DETAIL_CODE_NAME = #detailCodeName# , CODE_USE_CHECK = #codeUseCheck# ,
+		DESCRIPTION = #description# WHERE DIVISION_CODE_NO = #divisionCodeNo# AND DETAIL_CODE = #detailCode#
+	</update>
+	
+	<delete id="deleteDetailCode" parameterClass="codeDetailTO">
+		DELETE FROM CODE_DETAIL WHERE DIVISION_CODE_NO = #divisionCodeNo# AND DETAIL_CODE  = #detailCode#
+	</delete>
+	
+	<update id="changeCodeUseCheck" parameterClass="map">
+		UPDATE CODE_DETAIL SET CODE_USE_CHECK = #divisionCodeNo# WHERE DIVISION_CODE_NO = #detailCode# AND
+		DETAIL_CODE = #codeUseCheck#
+	</update>
+
+
+</sqlMap>
